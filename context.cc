@@ -47,6 +47,11 @@ void SimulationContext::LoadEvents(const string &file)
       PostEvent(new Event(timestamp,DRAW_TOPOLOGY,this,0));
       continue;
     }
+    if (!strcasecmp(cmd,"DUMP_TABLE")) {
+      sscanf(buf,"%lf %s %u",&timestamp,cmd,&num);
+      PostEvent(new Event(timestamp,DUMP_TABLE,this,new Node(num,this,0,0)));
+      continue;
+    }
     if (!strcasecmp(cmd,"DRAW_TREE")) {
       sscanf(buf,"%lf %s %u",&timestamp,cmd,&num);
       PostEvent(new Event(timestamp,DRAW_TREE,this,new Node(num,this,0,0)));
@@ -150,6 +155,15 @@ void SimulationContext::WritePathDot(const Node *src, const Node *dest, const st
 void SimulationContext::DrawPath(const Link *p) const
 {
   // NOT DONE
+}
+
+
+ostream & SimulationContext::DumpTable(iostream &os, const Node *src) const
+{
+  Table *t=(FindMatchingNode(src))->GetRoutingTable();
+  os << *t;
+  delete t;
+  return os;
 }
 
 

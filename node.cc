@@ -72,21 +72,18 @@ void Node::LinkUpdate(const Link *l)
 
 void Node::ProcessIncomingRoutingMessage(const RoutingMessage *m)
 {
-  cerr << *this << " got a routing messagee: "<<*m<<endl;
-  // WRITE
+  cerr << *this << " got a routing messagee: "<<*m<<" Ignored "<<endl;
 }
 
 
 Node *Node::GetNextHop(const Node *destination) const
 {
-  // WRITE
   return 0;
 }
 
 Table *Node::GetRoutingTable() const
 {
-  // WRITE
-  return 0;
+  return new Table;
 }
 
 

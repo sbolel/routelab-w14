@@ -4,6 +4,8 @@
 #include <new>
 #include <iostream>
 
+using namespace std;
+
 class SimulationContext;
 
 class Link {

@@ -47,6 +47,7 @@ void Event::Dispatch()
   case ROUTING_MESSAGE_ARRIVAL:
     ((Node*)handler)->ProcessIncomingRoutingMessage((RoutingMessage*)data);
     break;
+    
   default:
     cerr <<"Unknown event type\n";
     exit(-1);
@@ -71,12 +72,17 @@ ostream & Event::Print(ostream &os) const
      etype==DRAW_TOPOLOGY ? "DRAW_TOPOLOGY" :
      etype==DRAW_TREE ? "DRAW_TREE" :
      etype==DRAW_PATH ? "DRAW_PATH" :
+     etype==DUMP_TABLE ? "DUMP_TABLE" :
     etype==ROUTING_MESSAGE_ARRIVAL ? "ROUTING_MESSAGE_ARRIVAL" :
    "UNKNOWN") << ", ";
   switch (etype) { 
   case DRAW_TOPOLOGY:
     break;
+  case ADD_NODE:
+  case DELETE_NODE:
+  case CHANGE_NODE:
   case DRAW_TREE:
+  case DUMP_TABLE:
     os << *((Node*)data);
     break;
   case DRAW_PATH:
@@ -88,9 +94,6 @@ ostream & Event::Print(ostream &os) const
     os <<*((string*)data);
     break;
 #endif
-  case ADD_NODE:
-  case DELETE_NODE:
-  case CHANGE_NODE:
   case ADD_LINK:
   case DELETE_LINK:
   case CHANGE_LINK:
@@ -135,6 +138,7 @@ Event::~Event()
     case ADD_NODE:
     case DELETE_NODE:
     case CHANGE_NODE:
+    case DUMP_TABLE:
       delete (Node *) data;
       break;
     case ADD_LINK:

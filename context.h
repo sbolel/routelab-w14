@@ -27,6 +27,8 @@ class SimulationContext : public Topology, public EventQueue
   void DrawPath(const Link *l) const;
   void WritePathDot(const Node *src, const Node *dest, const string &s) const;
 
+  ostream &DumpTable(iostream &os, const Node *src) const;
+
   void DispatchEvent(Event *e);
 
   ostream &Print(ostream &os);

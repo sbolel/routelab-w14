@@ -9,10 +9,16 @@ Event * EventQueue::GetEarliestEvent() {
   if (q.size()>0) {
     Event *e=q.top();
     q.pop();
+    curtime=e->GetTimeStamp();
     return e;
   } else {
     return 0;
   }
+}
+
+double EventQueue::GetTime()
+{
+  return curtime;
 }
 
 EventQueue::~EventQueue() {
@@ -27,7 +33,7 @@ ostream & EventQueue::Print(ostream &os)
   Event *e;
   deque<Event *> tq;
 
-  os <<"EventQueue(eventlist={";
+  os <<"EventQueue(curtime="<<curtime<<", eventlist={";
   while ((e=GetEarliestEvent())) {
     tq.push_back(e);
   }

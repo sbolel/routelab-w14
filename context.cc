@@ -133,3 +133,17 @@ void SimulationContext::DispatchEvent(Event *e)
 void SimulationContext::WriteShortestPathTreeDot(const string &s) const
 {
 }
+
+
+void SimulationContext::SendToNeighbors(const Node *src, RoutingMessage *m)
+{
+  deque<Link*> *ll=GetOutgoingLinks(src);
+  for (deque<Link*>::const_iterator i=ll->begin();i!=ll->end();++i) {
+    PostEvent(new Event(GetTime()+(*i)->GetLatency(),
+			ROUTING_MESSAGE_ARRIVAL,
+			FindMatchingNode(&Node((*i)->GetDest(),0,0,0)),
+			m));
+  }
+  delete ll;
+}
+					 

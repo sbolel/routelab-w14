@@ -100,6 +100,11 @@ void Event::Disassociate()
   data=0;
 }
 
+double Event::GetTimeStamp()
+{
+  return timestamp;
+}
+
 
 Event::~Event()
 {

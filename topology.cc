@@ -42,6 +42,20 @@ Node * Topology::FindMatchingNode(const Node *n)
 }
 
 
+deque<Link*> * Topology::GetOutgoingLinks(const Node *src)
+{
+  deque<Link*> *out = new deque<Link*>;
+
+  for (deque<Link*>::iterator i=links.begin();
+	   i!=links.end(); ++i) { 
+    if ((*i)->GetSrc()==src->GetNumber()) { 
+      out->push_back(*i);
+    }
+  }
+  return out;
+}
+
+
 
 deque<Link*>::iterator Topology::FindMatchingLinkIt(const Link *l)
 {
@@ -115,6 +129,8 @@ void Topology::ChangeLink(const Link *l)
   if (i!=links.end()) { 
     **i=*l;
   }
+  Node *n=FindMatchingNode(&Node(l->GetSrc(),0,0,0));
+  n->LinkUpdate(l);
 }
 
 void Topology::WriteDot(const string &n) const 

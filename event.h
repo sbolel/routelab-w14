@@ -23,6 +23,8 @@ class Event {
   // default copy construct and operator= is OK
   virtual ~Event();
 
+  double GetTimeStamp();
+
   void Dispatch();
   void Disassociate();
 

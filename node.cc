@@ -1,4 +1,5 @@
 #include "node.h"
+#include "context.h"
 #include "error.h"
 
 
@@ -38,8 +39,9 @@ double Node::GetBW() const
 Node::~Node()
 {}
 
-void Node::SendToNeighbors(const RoutingMessage *m)
+void Node::SendToNeighbors(RoutingMessage *m)
 {
+  context->SendToNeighbors(this,m);
 }
 
 bool Node::Matches(const Node &rhs) const
@@ -48,8 +50,18 @@ bool Node::Matches(const Node &rhs) const
 }
 
 
+
+void Node::LinkUpdate(const Link *l)
+{
+  cerr << *this << " got a link update: "<<*l<<endl;
+  SendToNeighbors(new RoutingMessage);
+  //WRITE
+}
+
+
 void Node::ProcessIncomingRoutingMessage(const RoutingMessage *m)
 {
+  cerr << *this << " got a routing messagee: "<<*m<<endl;
   // WRITE
 }
 
@@ -68,6 +80,6 @@ Table *Node::GetRoutingTable() const
 
 ostream & Node::Print(ostream &os) const
 {
-  os << "Node(number="<<number<<", bw="<<bw<<", lat="<<lat<<")";
+  os << "Node(number="<<number<<", lat="<<lat<<", bw="<<bw<<")";
   return os;
 }

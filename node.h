@@ -8,6 +8,7 @@
 #include "table.h"
 #include "messages.h"
 
+#include "link.h"
 
 class SimulationContext;
 
@@ -37,11 +38,12 @@ class Node {
   virtual void SetBW(const double b);
   virtual double GetBW() const;
 
-  virtual void SendToNeighbors(const RoutingMessage *m);
+  virtual void SendToNeighbors(RoutingMessage *m);
 
   //
   // Students will WRITE THESE
   //
+  virtual void LinkUpdate(const Link *l);
   virtual void ProcessIncomingRoutingMessage(const RoutingMessage *m);
   virtual void GetRoute(const Node *destination, RoutingTableEntry *rte) const;
   virtual Table *GetRoutingTable() const;

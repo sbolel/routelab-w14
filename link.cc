@@ -49,6 +49,7 @@ double Link::GetBW() const
 
 ostream & Link::Print(ostream &os) const
 {
-  os << "Link(src="<<src<<", dest="<<dest<<", bw="<<bw<<", lat="<<lat<<")";
+  os << "Link(src="<<src<<", dest="<<dest<<", lat="<<lat<<", bw="<<bw<<")";
   return os;
 }
+

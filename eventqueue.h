@@ -10,7 +10,7 @@ class EventQueue {
  private:
   priority_queue<Event *,deque<Event *>,CompareEvents> q;
  public:
-  void   InsertEvent(Event *e);
+  void   PostEvent(Event *e);
   Event *GetEarliestEvent();
 
   ostream &Print(ostream &os) const;

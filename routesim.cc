@@ -1,5 +1,11 @@
 #include "context.h"
 
+class MyNode : public Node
+{
+
+}
+
+
 
 int main(int argc, char *argv)
 {
@@ -15,16 +21,15 @@ int main(int argc, char *argv)
   topofile=argv[1];
   eventfile=argv[2];
   
-  Context c;
+  Context<MyNode,Link> c;
 
   c.LoadTopology(topofile);
   c.LoadEvents(eventfile);
   
   Event *e;
   while ((e=c.GetNextEvent())) {
-    e->Dispatch();
-    e->Disassociate();
-    delete e;
+    cerr << *e << endl;
+    c.DispatchEvent(e);
   }
 }
   

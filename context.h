@@ -9,11 +9,10 @@
 #include "eventqueue.h"
 #include "table.h"
 
-class Context {
- private:
-  Topology   topology;
-  EventQueue eventqueue;
 
+template <class NODE, class LINK>
+class Context : public  Topology<NODE,LINK>, public EventQueue
+{
  public:
   Context();
   virtual ~Context();
@@ -21,11 +20,9 @@ class Context {
   void LoadTopology(const string &file);
   void LoadEvents(const string &file);
 
-  void DrawTopology() const;
-  void DrawShortestPathTree(const Node *node) const;
+  void DrawShortestPathTree(const NODE *node) const;
 
-  void PostEvent(Event *event);
-  Event *GetNextEvent();
-}
+  void DispatchEvent(Event *event);
+};
 
 #endif

@@ -1,19 +1,27 @@
 #include "node.h"
+#include "error.h"
 
-Node::Node(const string n, double b, double l, Graph *g) : 
-    name(n), bw(b), lat(l), graph(g) 
+
+Node::Node(const unsigned n, Context *c, double b, double l) : 
+    number(n), context(c), bw(b), lat(l) 
 {}
 
 Node::Node() 
 { throw GeneralException(); }
 
 Node::Node(const Node &rhs) : 
-  name(rhs.name), bw(rhs.bw), lat(rhs.lat), graph(rhs.graph) {}
+  number(rhs.number), context(rhs.context), bw(rhs.bw), lat(rhs.lat) {}
 
 Node & Node::operator=(const Node &rhs) 
 {
   return *(new(this)Node(rhs));
 }
+
+void Node::SetNumber(const unsigned n) 
+{ number=n;}
+
+unsigned Node::GetNumber() const 
+{ return number;}
 
 void Node::SetLatency(const double l) 
 { lat=l;}
@@ -34,7 +42,7 @@ void Node::SendToNeighbors(const RoutingMessage &m)
 {
 }
 
-void Node::Matches(const Node &rhs)
+bool Node::Matches(const Node &rhs) const
 {
-  return num=rhs.num;
+  return number==rhs.number;
 }

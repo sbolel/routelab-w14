@@ -1,14 +1,14 @@
 #include "link.h"
 
-Link::Link(const unsigned s, const unsigned d, double b, double l, Context *c) :
-  src(s), dest(d), bw(b), lat(l), context(c) {}
+Link::Link(const unsigned s, const unsigned d, Context *c, double b, double l) :
+  src(s), dest(d), context(c), bw(b), lat(l) {}
 
 Link::Link()
 {}
 
 
 Link::Link(const Link &rhs) :
-  src(rhs.src), dest(rhs.dest), bw(rhs.bw), lat(rhs.lat), context(rhs.context) {}
+  src(rhs.src), dest(rhs.dest), context(rhs.context), bw(rhs.bw), lat(rhs.lat) {}
 
 Link & Link::operator=(const Link &rhs)
 {
@@ -18,16 +18,28 @@ Link & Link::operator=(const Link &rhs)
 Link::~Link()
 {}
 
-void SetLatency(const double l)
+void Link::SetSrc(const unsigned s) 
+{ src=s;}
+
+unsigned Link::GetSrc() const 
+{ return src;}
+
+void Link::SetDest(const unsigned d) 
+{ dest=d;}
+
+unsigned Link::GetDest() const 
+{ return dest;}
+
+void Link::SetLatency(const double l)
 { lat=l;}
 
-double GetLatency() const 
+double Link::GetLatency() const 
 { return lat; }
 
-void SetBW(const double b)
+void Link::SetBW(const double b)
 { bw=b;}
 
-double GetBW() const
+double Link::GetBW() const
 { return bw;}
 
 ostream & Link::Print(ostream &os) const

@@ -2,6 +2,14 @@
 #define _table
 
 typedef unsigned IPAddress;
-ostream &PrettyPrintIPAddress(os
+ostream &PrettyPrintIPAddress(ostream &os,const IPAddress a);
+
+class Table {
+
+};
+
+class RoutingTableEntry {
+
+};
 
 #endif

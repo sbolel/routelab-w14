@@ -6,34 +6,40 @@
 
 #include <deque>
 
+
+template <class NODE, class LINK>
 class Topology
 {
  private:
-  deque<Node*> nodes;
-  deque<Link*> links;
+  deque<NODE*> nodes;
+  deque<LINK*> links;
+
+  deque<NODE*>::iterator *FindMatchingNodeIt(const NODE *n);
+  deque<LINK*>::iterator *FindMatchingLinkIt(const LINK *l);
   
  public:
   Topology();
-  virtual ~Topolog();
+  virtual ~Topology();
 
-  Node *FindMatchingNode(const Node *n);
+  LINK *FindMatchingNode(const NODE *n);
 
-  void AddNode(const Node *n);
-  void DeleteNode(const Node *n);
-  void ChangeNode(const Node *n);
+  void AddNode(const NODE *n);
+  void DeleteNode(const NODE *n);
+  void ChangeNode(const NODE *n);
 
-  Node *FindMatchingLink(const Link *l);
+  NODE *FindMatchingLink(const LINK *l);
 
-  void AddLink(const Link *n);
-  void DeleteLink(const Link *n);
-  void ChangeLink(const Link *n);
+  void AddLink(const LINK *n);
+  void DeleteLink(const LINK *n);
+  void ChangeLink(const LINK *n);
 
   void DrawTopology() const;
 
   ostream & Print(ostream &os) const;
 }  ;
 
-inline ostream & operator<<(ostream &os, const Topology &t) { return t.Print(os);}
+template <class NODE, class LINK>
+inline ostream & operator<<(ostream &os, const Topology<NODE,LINK> &t) { return t.Print(os);};
 
 #endif
 

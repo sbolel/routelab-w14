@@ -1,6 +1,6 @@
 #include "link.h"
 
-Link::Link(const unsigned s, const unsigned d, Context *c, double b, double l) :
+Link::Link(const unsigned s, const unsigned d, SimulationContext *c, double b, double l) :
   src(s), dest(d), context(c), bw(b), lat(l) {}
 
 Link::Link()
@@ -17,6 +17,11 @@ Link & Link::operator=(const Link &rhs)
 
 Link::~Link()
 {}
+
+bool Link::Matches(const Link &rhs) const
+{
+  return src==rhs.src && dest==rhs.dest;
+}
 
 void Link::SetSrc(const unsigned s) 
 { src=s;}

@@ -4,22 +4,23 @@
 #include <new>
 #include <iostream>
 
-
-class Context;
+class SimulationContext;
 
 class Link {
   unsigned src,dest;
-  Context  *context;
+  SimulationContext *context;
   double   bw;
   double   lat;
   
 
  public:
-  Link(const unsigned s, const unsigned d, Context *c, double b, double l);
+  Link(const unsigned s, const unsigned d, SimulationContext *c, double b, double l);
   Link();
   Link(const Link &rhs);
   Link & operator=(const Link &rhs);
   virtual ~Link();
+
+  virtual bool Matches(const Link &rhs) const;
 
 
   virtual void SetSrc(const unsigned s);

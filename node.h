@@ -7,25 +7,21 @@
 
 #include "table.h"
 #include "messages.h"
-#include "node.h"
-#include "link.h"
-#include "topology.h"
-#include "context.h"
+
+
+class SimulationContext;
 
 using namespace std;
-
-class Context;
-
 
 class Node {
  private:
   unsigned number;
-  Context    *context;
+  SimulationContext    *context;
   double   bw;
   double   lat;
 
  public:
-  Node(const unsigned n, Context *c, double b, double l);
+  Node(const unsigned n, SimulationContext *c, double b, double l);
   Node();
   Node(const Node &rhs);
   Node & operator=(const Node &rhs);
@@ -41,14 +37,14 @@ class Node {
   virtual void SetBW(const double b);
   virtual double GetBW() const;
 
-  virtual void SendToNeighbors(const RoutingMessage &m);
+  virtual void SendToNeighbors(const RoutingMessage *m);
 
   //
-  // Students will override these
+  // Students will WRITE THESE
   //
-  virtual void ProcessIncomingRoutingMessage(const RoutingMessage &m) {}
-  virtual void GetRoute(const Node &destination, RoutingTableEntry *rte) {}
-  virtual Table *GetRoutingTable() const { return 0;};
+  virtual void ProcessIncomingRoutingMessage(const RoutingMessage *m);
+  virtual void GetRoute(const Node *destination, RoutingTableEntry *rte) const;
+  virtual Table *GetRoutingTable() const;
 
   virtual ostream & Print(ostream &os) const;
 

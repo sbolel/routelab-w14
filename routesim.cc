@@ -1,9 +1,12 @@
 #include "context.h"
 
+#include "node.h"
+#include "link.h"
+
 class MyNode : public Node
 {
 
-}
+};
 
 
 
@@ -21,13 +24,13 @@ int main(int argc, char *argv)
   topofile=argv[1];
   eventfile=argv[2];
   
-  Context<MyNode,Link> c;
+  SimulationContext<MyNode,Link> c;
 
   c.LoadTopology(topofile);
   c.LoadEvents(eventfile);
   
-  Event *e;
-  while ((e=c.GetNextEvent())) {
+  Event<MyNode,Link> *e;
+  while ((e=c.GetEarliestEvent())) {
     cerr << *e << endl;
     c.DispatchEvent(e);
   }

@@ -2,7 +2,7 @@
 #include "error.h"
 
 
-Node::Node(const unsigned n, Context *c, double b, double l) : 
+Node::Node(const unsigned n, SimulationContext *c, double b, double l) : 
     number(n), context(c), bw(b), lat(l) 
 {}
 
@@ -38,11 +38,29 @@ double Node::GetBW() const
 Node::~Node()
 {}
 
-void Node::SendToNeighbors(const RoutingMessage &m)
+void Node::SendToNeighbors(const RoutingMessage *m)
 {
 }
 
 bool Node::Matches(const Node &rhs) const
 {
   return number==rhs.number;
+}
+
+
+void Node::ProcessIncomingRoutingMessage(const RoutingMessage *m)
+{
+  // WRITE
+}
+
+
+void Node::GetRoute(const Node *destination, RoutingTableEntry *rte) const
+{
+  // WRITE
+}
+
+Table *Node::GetRoutingTable() const
+{
+  // WRITE
+  return 0;
 }

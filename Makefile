@@ -8,6 +8,7 @@ LIB_OBJS = node.o       \
            topology.o   \
            event.o      \
            eventqueue.o \
+           table.o      \
            messages.o   \
 	   context.o    \
 

@@ -12,15 +12,20 @@ void Event::Dispatch()
   case DRAW_TOPOLOGY:
     ((Topology*)handler)->DrawTopology();
     break;
-  case WRITE_TOPOLOGY:
-    ((Topology*)handler)->WriteDot(*(string*)data);
-    break;
   case DRAW_TREE:
     ((SimulationContext*)handler)->DrawShortestPathTree((Node*)data);
+    break;
+  case DRAW_PATH:
+    ((SimulationContext*)handler)->DrawPath((Link*)data);
+    break;
+#if 0
+  case WRITE_TOPOLOGY:
+    ((Topology*)handler)->WriteDot(*(string*)data);
     break;
   case WRITE_TREE:
     ((SimulationContext*)handler)->WriteShortestPathTreeDot(*(string*)data);
     break;
+#endif
   case ADD_NODE:
     ((Topology*)handler)->AddNode((Node*)data);
     break;
@@ -59,25 +64,33 @@ ostream & Event::Print(ostream &os) const
      etype==DELETE_LINK ? "DELETE_LINK" :
      etype==CHANGE_NODE ? "CHANGE_NODE" :
      etype==CHANGE_LINK ? "CHANGE_LINK" :
+#if 0
      etype==WRITE_TOPOLOGY ? "WRITE_TOPOLOGY" :
-     etype==DRAW_TOPOLOGY ? "DRAW_TOPOLOGY" :
      etype==WRITE_TREE ? "WRITE_TREE" :
+#endif
+     etype==DRAW_TOPOLOGY ? "DRAW_TOPOLOGY" :
      etype==DRAW_TREE ? "DRAW_TREE" :
+     etype==DRAW_PATH ? "DRAW_PATH" :
     etype==ROUTING_MESSAGE_ARRIVAL ? "ROUTING_MESSAGE_ARRIVAL" :
    "UNKNOWN") << ", ";
   switch (etype) { 
   case DRAW_TOPOLOGY:
     break;
+  case DRAW_TREE:
+    os << *((Node*)data);
+    break;
+  case DRAW_PATH:
+    os << *((Link*)data);
+    break;
+#if 0
   case WRITE_TOPOLOGY:
   case WRITE_TREE:
     os <<*((string*)data);
     break;
+#endif
   case ADD_NODE:
   case DELETE_NODE:
   case CHANGE_NODE:
-  case DRAW_TREE:
-    os << *((Node*)data);
-    break;
   case ADD_LINK:
   case DELETE_LINK:
   case CHANGE_LINK:
@@ -112,10 +125,12 @@ Event::~Event()
     switch (etype) { 
     case DRAW_TOPOLOGY:
       break;
+#if 0
     case WRITE_TOPOLOGY:
     case WRITE_TREE:
       delete (string *)data;
       break;
+#endif
     case DRAW_TREE:
     case ADD_NODE:
     case DELETE_NODE:
@@ -125,6 +140,7 @@ Event::~Event()
     case ADD_LINK:
     case DELETE_LINK:
     case CHANGE_LINK:
+    case DRAW_PATH:
       delete (Link *) data;
       break;
     case ROUTING_MESSAGE_ARRIVAL:

@@ -22,6 +22,7 @@ class Topology
 
   Node *FindMatchingNode(const Node *n);
   deque<Link*> *GetOutgoingLinks(const Node *n);
+  deque<Node*> *GetNeighbors(const Node *n);
 
   void AddNode(Node *n);
   void DeleteNode(const Node *n);

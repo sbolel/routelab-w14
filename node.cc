@@ -39,10 +39,21 @@ double Node::GetBW() const
 Node::~Node()
 {}
 
-void Node::SendToNeighbors(RoutingMessage *m)
+void Node::SendToNeighbors(const RoutingMessage *m)
 {
   context->SendToNeighbors(this,m);
 }
+
+void Node::SendToNeighbor(const Node *n, const RoutingMessage *m)
+{
+  context->SendToNeighbor(this,n,m);
+}
+
+deque<Node*> *Node::GetNeighbors()
+{
+  return context->GetNeighbors(this);
+}
+
 
 bool Node::Matches(const Node &rhs) const
 {
@@ -66,9 +77,10 @@ void Node::ProcessIncomingRoutingMessage(const RoutingMessage *m)
 }
 
 
-void Node::GetRoute(const Node *destination, RoutingTableEntry *rte) const
+Node *Node::GetNextHop(const Node *destination) const
 {
   // WRITE
+  return 0;
 }
 
 Table *Node::GetRoutingTable() const

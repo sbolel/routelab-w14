@@ -3,7 +3,7 @@
 
 #include <new>
 #include <iostream>
-
+#include <deque>
 
 #include "table.h"
 #include "messages.h"
@@ -20,6 +20,8 @@ class Node {
   SimulationContext    *context;
   double   bw;
   double   lat;
+  
+  // students will add protocol-specific data here
 
  public:
   Node(const unsigned n, SimulationContext *c, double b, double l);
@@ -38,14 +40,16 @@ class Node {
   virtual void SetBW(const double b);
   virtual double GetBW() const;
 
-  virtual void SendToNeighbors(RoutingMessage *m);
+  virtual void SendToNeighbors(const RoutingMessage *m);
+  virtual void SendToNeighbor(const Node *n, const RoutingMessage *m);
+  virtual deque<Node*> *GetNeighbors();
 
   //
   // Students will WRITE THESE
   //
   virtual void LinkUpdate(const Link *l);
   virtual void ProcessIncomingRoutingMessage(const RoutingMessage *m);
-  virtual void GetRoute(const Node *destination, RoutingTableEntry *rte) const;
+  virtual Node *GetNextHop(const Node *destination) const;
   virtual Table *GetRoutingTable() const;
 
   virtual ostream & Print(ostream &os) const;

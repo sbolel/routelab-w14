@@ -24,6 +24,9 @@ class Topology
   deque<Link*> *GetOutgoingLinks(const Node *n);
   deque<Node*> *GetNeighbors(const Node *n);
 
+  void CollectShortestPathTreeLinks(const Node &src, deque<Link> &links);
+  void CollectShortestPathLinks(const Node &src, const Node &dest, deque<Link> &links);
+
   void AddNode(Node *n);
   void DeleteNode(const Node *n);
   void ChangeNode(const Node *n);

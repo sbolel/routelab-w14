@@ -25,7 +25,6 @@ class SimulationContext : public Topology, public EventQueue
   void SendToNeighbor(const Node *src, const Node *dest, const RoutingMessage *m);
   void TimeOut(const Node *src, const double timefromnow);
 
-
   void CollectPathLinks(const Node &src, const Node &dest, deque<Link> &links) const;
   void DrawShortestPathTree(const Node *node) const;
   void WriteShortestPathTreeDot(const Node *node, const string &s) const;

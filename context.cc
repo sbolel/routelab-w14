@@ -107,6 +107,22 @@ void SimulationContext::LoadEvents(const string &file)
       PostEvent(new Event(timestamp,CHANGE_LINK,this,new Link(src,dest,this,bw,lat)));
       continue;
     }
+    if (!strcasecmp(cmd,"PRINT")) {
+      sscanf(buf,"%lf %s",&timestamp,cmd);
+      char *start;
+      char *data = new char [1024];
+      start=strstr(buf,"PRINT")+5;
+      while (*start!=0 && isspace(*start)) { 
+	start++;
+      }
+      if (*start==0) { 
+	strncpy(data,"Nothing to print!",1024);
+      } else {
+	strncpy(data,start,1024);
+      }
+      PostEvent(new Event(timestamp,PRINT,this,data));
+      continue;
+    }
   }
   fclose(in);
 }
@@ -141,7 +157,6 @@ ostream & SimulationContext::Print(ostream &os)
 
 
 
-
 void SimulationContext::DrawShortestPathTree(const Node *node) const
 {
   WriteShortestPathTreeDot(node,"_tree.in");
@@ -168,6 +183,7 @@ struct link_eq {
 
 void SimulationContext::WriteShortestPathTreeDot(const Node *src, const string &s) const
 {
+  cerr << "********BEGIN WRITE TREE"<<endl;
   FILE *out = fopen(s.c_str(),"w");
   if (out==0) { 
     return;
@@ -182,6 +198,9 @@ void SimulationContext::WriteShortestPathTreeDot(const Node *src, const string &
       treelinks[*j]=1;
     }
   }
+  deque<Link> realtree;
+  ((SimulationContext*)this)->CollectShortestPathTreeLinks(*src,realtree);
+
   fprintf(out,"digraph tree {\n");
   for (deque<Node*>::const_iterator i=nodes.begin(); i!=nodes.end();++i) {
     fprintf(out,"%u\n",(*i)->GetNumber());
@@ -189,22 +208,39 @@ void SimulationContext::WriteShortestPathTreeDot(const Node *src, const string &
   for (deque<Link*>::const_iterator i=links.begin(); i!=links.end();++i) {
     fprintf(out,"%u -> %u [ label=\"%5.1lf\" ];\n",(*i)->GetSrc(),(*i)->GetDest(), (*i)->GetLatency());
   }
+  for (deque<Link>::const_iterator i=realtree.begin(); i!=realtree.end();++i) {
+    fprintf(out,"%u -> %u [ color=blue ];\n",(*i).GetSrc(),(*i).GetDest());
+  }
   for (hash_map<Link,int,link_hash,link_eq>::const_iterator i=treelinks.begin();i!=treelinks.end();++i) {
     Link l = (*i).first;
     fprintf(out,"%u -> %u [ color=red ];\n",l.GetSrc(),l.GetDest());
+    bool found=false;
+    for (deque<Link>::const_iterator j=realtree.begin(); j!=realtree.end();++j) { 
+      if ((*j).GetSrc()==l.GetSrc() && (*j).GetDest()==l.GetDest()) { 
+	found=true;
+	break;
+      }
+    }
+    if (!found) { 
+      cout << "SUSPICIOUS: "<<l.GetSrc()<<" -> "<<l.GetDest()<<" not found in actual shortest paths tree"<<endl;
+    }
   }
   fprintf(out,"}\n");
   fclose(out);
+  cerr << "********END WRITE TREE"<<endl;
 }
 
 void SimulationContext::WritePathDot(const Node &src, const Node &dest, const string &s) const
 {
+  cerr << "********BEGIN WRITE PATH"<<endl;
   FILE *out = fopen(s.c_str(),"w");
   if (out==0) { 
     return;
   } 
   deque<Link> path;
   CollectPathLinks(src,dest,path);
+  deque<Link> realpath;
+  ((SimulationContext*)this)->CollectShortestPathLinks(src,dest,realpath);
   fprintf(out,"digraph path {\n");
   for (deque<Node*>::const_iterator i=nodes.begin(); i!=nodes.end();++i) {
     fprintf(out,"%u\n",(*i)->GetNumber());
@@ -212,11 +248,26 @@ void SimulationContext::WritePathDot(const Node &src, const Node &dest, const st
   for (deque<Link*>::const_iterator i=links.begin(); i!=links.end();++i) {
     fprintf(out,"%u -> %u [ label=\"%5.1lf\" ];\n",(*i)->GetSrc(),(*i)->GetDest(), (*i)->GetLatency());
   }
+  for (deque<Link>::const_iterator i=realpath.begin();i!=realpath.end();++i) {
+    fprintf(out,"%u -> %u [ color=blue ];\n",(*i).GetSrc(),(*i).GetDest());
+  }
   for (deque<Link>::const_iterator i=path.begin();i!=path.end();++i) {
     fprintf(out,"%u -> %u [ color=red ];\n",(*i).GetSrc(),(*i).GetDest());
+    Link l =(*i);
+    bool found=false;
+    for (deque<Link>::const_iterator j=realpath.begin(); j!=realpath.end();++j) { 
+      if ((*j).GetSrc()==l.GetSrc() && (*j).GetDest()==l.GetDest()) { 
+	found=true;
+	break;
+      }
+    }
+    if (!found) { 
+      cout << "SUSPICIOUS: "<<l.GetSrc()<<" -> "<<l.GetDest()<<" not found in actual shortest paths tree"<<endl;
+    }
   }
   fprintf(out,"}\n");
   fclose(out);
+  cerr << "********END WRITE PATH"<<endl;
 }
 
 void SimulationContext::DrawPath(const Link *p) const
@@ -234,12 +285,12 @@ void SimulationContext::CollectPathLinks(const Node &src, const Node &dest, dequ
     return;
   }
   unsigned last=n->GetNumber();
+  unsigned count=0;
   while (n->GetNumber()!=dest.GetNumber()) {
     Node *next_node=n->GetNextHop(&dest);
     if (next_node==0) {
       break;
     }
-    unsigned next=next_node->GetNumber();
     n=((SimulationContext *)this)->FindMatchingNode(next_node);
     if (n==0) {
       delete next_node;
@@ -249,6 +300,11 @@ void SimulationContext::CollectPathLinks(const Node &src, const Node &dest, dequ
     path.push_back(Link(last,n->GetNumber(),0,0,0));
     last=n->GetNumber();
     delete next_node;
+    count++;
+    if (count>(nodes.size()*2)) {
+      cerr << "SimulationContext::CollectPathLinks terminating prematurely due to suspected routing loop!\n";
+      break;
+    }
   }
  
 }

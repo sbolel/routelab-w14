@@ -1,3 +1,4 @@
+#include <vector>
 #include <stdio.h>
 #include "topology.h"
 
@@ -189,4 +190,62 @@ ostream &Topology::Print(ostream &os) const
   return os;
 }
 
+
+
+//
+// This is totally disgusting
+//
+void Topology::CollectShortestPathTreeLinks(const Node &src, deque<Link> &links) 
+{
+  vector<double> distance(nodes.size());
+  vector<unsigned>    pred(nodes.size());
+  deque<unsigned> visited;
+  deque<unsigned> unvisited;
+ 
+
+  for (deque<Node*>::const_iterator i=nodes.begin();i!=nodes.end();++i) {
+    unvisited.push_back((**i).GetNumber());
+    pred[(**i).GetNumber()]=nodes.size()+1;
+    if ((**i).GetNumber()!=src.GetNumber()) {
+      distance[(**i).GetNumber()]=99e99;
+    } else {
+      distance[(**i).GetNumber()]=0;
+    }
+  }
   
+  while (unvisited.size()>0) {
+    double curmin=100e99;
+    deque<unsigned>::iterator c;
+    unsigned closest;
+    for (deque<unsigned>::iterator i=unvisited.begin(); i!=unvisited.end();++i) { 
+      if (distance[*i]<curmin) { 
+	curmin=distance[*i];
+	c=i;
+      }
+    }
+    closest=*c;
+    unvisited.erase(c);
+    visited.push_back(closest);
+    if (closest!=src.GetNumber()) { 
+      links.push_back(Link(pred[closest],closest,0,0,0));
+    }
+    deque<Link*> *adj= GetOutgoingLinks(FindMatchingNode(&Node(closest,0,0,0)));
+    for (deque<Link*>::const_iterator i=adj->begin();i!=adj->end();++i) {
+      unsigned dest=(**i).GetDest();
+      double dist=(**i).GetLatency();
+      if (dist<distance[dest]) { 
+	distance[dest]=dist;
+	pred[dest]=closest;
+      }
+    }
+    delete adj;
+  }
+}
+
+void Topology::CollectShortestPathLinks(const Node &src, const Node &dest, deque<Link> &links) 
+{
+  CollectShortestPathTreeLinks(src,links);
+}
+
+
+

@@ -54,6 +54,9 @@ void Event::Dispatch()
   case ROUTING_MESSAGE_ARRIVAL:
     ((Node*)handler)->ProcessIncomingRoutingMessage((RoutingMessage*)data);
     break;
+  case PRINT:
+    cout << ((char*) data);
+    break;
   default:
     cerr <<"Unknown event type\n";
     exit(-1);
@@ -80,6 +83,7 @@ ostream & Event::Print(ostream &os) const
      etype==DRAW_PATH ? "DRAW_PATH" :
      etype==DUMP_TABLE ? "DUMP_TABLE" :
      etype==TIMEOUT ? "TIMEOUT" :
+     etype==PRINT ? "PRINT" :
     etype==ROUTING_MESSAGE_ARRIVAL ? "ROUTING_MESSAGE_ARRIVAL" :
    "UNKNOWN") << ", ";
   switch (etype) { 
@@ -109,6 +113,9 @@ ostream & Event::Print(ostream &os) const
     break;
   case ROUTING_MESSAGE_ARRIVAL:
     os <<*((RoutingMessage*)data);
+    break;
+  case PRINT:
+    os <<"\""<<((char*)data)<<"\"";
     break;
   default:
     os << "Unknown()";
@@ -158,6 +165,9 @@ Event::~Event()
       break;
     case ROUTING_MESSAGE_ARRIVAL:
       delete (RoutingMessage*) data;
+      break;
+    case PRINT:
+      delete [] (char*) data;
       break;
     default:
       cerr <<"Unknown event type\n";

@@ -235,16 +235,20 @@ void SimulationContext::CollectPathLinks(const Node &src, const Node &dest, dequ
   }
   unsigned last=n->GetNumber();
   while (n->GetNumber()!=dest.GetNumber()) {
-    if (n->GetNextHop(&dest)==0) {
+    Node *next_node=n->GetNextHop(&dest);
+    if (next_node==0) {
       break;
     }
-    n=((SimulationContext *)this)->FindMatchingNode(n->GetNextHop(&dest));
+    unsigned next=next_node->GetNumber();
+    n=((SimulationContext *)this)->FindMatchingNode(next_node);
     if (n==0) {
+      delete next_node;
       break;
     }
     //    cerr << last <<" -> " << n->GetNumber()<<endl;
     path.push_back(Link(last,n->GetNumber(),0,0,0));
     last=n->GetNumber();
+    delete next_node;
   }
  
 }

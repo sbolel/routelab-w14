@@ -7,6 +7,10 @@
 
 #include "table.h"
 #include "messages.h"
+#include "node.h"
+#include "link.h"
+#include "topology.h"
+#include "context.h"
 
 using namespace std;
 

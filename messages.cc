@@ -1,5 +1,10 @@
 #include "messages.h"
 
+RoutingMessage & RoutingMessage::operator=(const RoutingMessage &rhs)
+{
+  return *(new(this)RoutingMessage(rhs));
+}
+
 #if defined(GENERIC)
 ostream &RoutingMessage::Print(ostream &os) const
 {
@@ -10,7 +15,6 @@ ostream &RoutingMessage::Print(ostream &os) const
 
 
 #if defined(LINKSTATE)
-
 
 ostream &RoutingMessage::Print(ostream &os) const
 {
@@ -29,10 +33,27 @@ RoutingMessage::RoutingMessage(const RoutingMessage &rhs)
   : srcnode(rhs.srcnode), link(rhs.link), ttl(rhs.ttl), seqno(rhs.seqno)
 {}
 
-RoutingMessage & RoutingMessage::operator=(const RoutingMessage &rhs)
-{
-  return *(new(this)RoutingMessage(rhs));
-}
 #endif
 
+
+#if defined(DISTANCEVECTOR)
+
+ostream &RoutingMessage::Print(ostream &os) const
+{
+  os << "RoutingMessage(srcnode="<<srcnode<<", dest="<<dest<<", cost="<<cost<<")";
+  return os;
+}
+
+RoutingMessage::RoutingMessage()
+{}
+
+RoutingMessage::RoutingMessage(const Node &src, const Node &d, const double c)
+  : srcnode(src), dest(d), cost(c)
+{}
+
+RoutingMessage::RoutingMessage(const RoutingMessage &rhs)
+  : srcnode(rhs.srcnode), dest(rhs.dest), cost(rhs.cost)
+{}
+
+#endif
 

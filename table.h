@@ -34,6 +34,8 @@ struct Row {
   unsigned next_node;
   double cost;
   ostream &Print(ostream &os) const;
+  
+  Row(unsigned dest, unsigned next, double cost);
 };
 
 inline ostream & operator<<(ostream &os, const Row &r) { return r.Print(os);}
@@ -41,8 +43,8 @@ inline ostream & operator<<(ostream &os, const Row &r) { return r.Print(os);}
 class Table {
   deque<Row> m;
  public:
-  deque<Row>::iterator FindMatching(const unsigned dest) const;
-  Row *GetNext(const unsigned dest) const;
+  deque<Row>::iterator FindMatching(const unsigned dest);
+  Row *GetNext(const unsigned dest);
   void SetNext(const unsigned dest, const Row &r);
   ostream & Print(ostream &os) const;
 };

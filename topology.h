@@ -9,7 +9,7 @@
 
 class Topology
 {
- private:
+ protected:
   deque<Node*> nodes;
   deque<Link*> links;
 

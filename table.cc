@@ -15,7 +15,7 @@ ostream & Table::Print(ostream &os) const
 
 #if defined(DISTANCEVECTOR)
 
-deque<Row>::iterator Table::FindMatching(const unsigned dest) const
+deque<Row>::iterator Table::FindMatching(const unsigned dest) 
 {
   deque<Row>::iterator i;
 
@@ -27,7 +27,7 @@ deque<Row>::iterator Table::FindMatching(const unsigned dest) const
   return i;
 }
 
-Row *Table::GetNext(const unsigned dest) const 
+Row *Table::GetNext(const unsigned dest) 
 {
   deque<Row>::iterator i=FindMatching(dest);
   if (i==m.end()) { 
@@ -47,6 +47,10 @@ void Table::SetNext(const unsigned dest, const Row &r)
   }
 }
 
+Row::Row(const unsigned dest, const unsigned next, const double c) :
+  dest_node(dest), next_node(next), cost(c)
+{}
+
 ostream & Row::Print(ostream &os) const 
 {
   os <<"Row(dest="<<dest_node<<", next="<<next_node<<", cost="<<cost<<")";
@@ -60,6 +64,7 @@ ostream & Table::Print(ostream &os) const
     os <<(*i)<<", ";
   }
   os<<"})";
+  return os;
 }
     
 #endif

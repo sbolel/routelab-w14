@@ -110,6 +110,13 @@ void SimulationContext::LoadEvents(const string &file)
   fclose(in);
 }
 
+void SimulationContext::Init()
+{
+  for (deque<Link*>::const_iterator i=links.begin();i!=links.end();++i) { 
+    PostEvent(new Event(-9999999999, CHANGE_LINK,this,new Link(**i)));
+  }
+}
+
 void SimulationContext::LoadTopology(const string &file)
 {
   LoadEvents(file);
@@ -140,6 +147,7 @@ void SimulationContext::DispatchEvent(Event *e)
 {
   e->Dispatch();
   e->Disassociate();
+  delete e;
 }
 
 void SimulationContext::WriteShortestPathTreeDot(const Node *src, const string &s) const
@@ -147,23 +155,56 @@ void SimulationContext::WriteShortestPathTreeDot(const Node *src, const string &
   // NOT DONE
 }
 
-void SimulationContext::WritePathDot(const Node *src, const Node *dest, const string &s) const
+void SimulationContext::WritePathDot(const Node &src, const Node &dest, const string &s) const
 {
-  // NOT DONE
+  FILE *out = fopen(s.c_str(),"w");
+  if (out==0) { 
+    return;
+  } 
+  deque<Link> path;
+  Node *n=((SimulationContext*)this)->FindMatchingNode(&src);
+  if (n==0) { 
+    fclose(out);
+    return;
+  }
+  unsigned last=n->GetNumber();
+  while (n->GetNumber()!=dest.GetNumber()) {
+    if (n->GetNextHop(&dest)==0) {
+      break;
+    }
+    n=((SimulationContext *)this)->FindMatchingNode(n->GetNextHop(&dest));
+    if (n==0) {
+      break;
+    }
+    path.push_back(Link(last,n->GetNumber(),0,0,0));
+    last=n->GetNumber();
+  }
+  
+  fprintf(out,"digraph path {\n");
+  for (deque<Node*>::const_iterator i=nodes.begin(); i!=nodes.end();++i) {
+    fprintf(out,"%u\n",(*i)->GetNumber());
+  }
+  for (deque<Link*>::const_iterator i=links.begin(); i!=links.end();++i) {
+    fprintf(out,"%u -> %u [ label=\"%5.1lf\" ];\n",(*i)->GetSrc(),(*i)->GetDest(), (*i)->GetLatency());
+  }
+  for (deque<Link>::const_iterator i=path.begin();i!=path.end();++i) {
+    fprintf(out,"%u -> %u [ color=red ];\n",(*i).GetSrc(),(*i).GetDest());
+  }
+  fprintf(out,"}\n");
+  fclose(out);
 }
 
 void SimulationContext::DrawPath(const Link *p) const
 {
-  // NOT DONE
+  WritePathDot(Node(p->GetSrc(),0,0,0),Node(p->GetDest(),0,0,0),string("_path.in"));
+  system("dot _path.in > _path.out");
+  system("dotty _path.out");
 }
 
 
-ostream & SimulationContext::DumpTable(iostream &os, const Node *src) const
+void SimulationContext::DumpTable(const Node *src)
 {
-  Table *t=(FindMatchingNode(src))->GetRoutingTable();
-  os << *t;
-  delete t;
-  return os;
+  cout <<*(FindMatchingNode(src))<< endl;
 }
 
 

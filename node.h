@@ -11,6 +11,8 @@ class Table;
 class Link;
 class SimulationContext;
 
+#include "table.h"
+
 using namespace std;
 
 class Node {
@@ -23,6 +25,10 @@ class Node {
 #if defined(LINKSTATE)
   static const unsigned maxttl;
   unsigned seqno;
+#endif
+
+#if defined(DISTANCEVECTOR)
+  Table table;
 #endif
   
   // students will add protocol-specific data here

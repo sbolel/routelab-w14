@@ -1,3 +1,4 @@
+#include <iostream>
 #include "event.h"
 #include "context.h"
 
@@ -17,6 +18,9 @@ void Event::Dispatch()
     break;
   case DRAW_PATH:
     ((SimulationContext*)handler)->DrawPath((Link*)data);
+    break;
+  case DUMP_TABLE: 
+    ((SimulationContext*)handler)->DumpTable((Node*)data);
     break;
 #if 0
   case WRITE_TOPOLOGY:

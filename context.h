@@ -19,15 +19,17 @@ class SimulationContext : public Topology, public EventQueue
   void LoadTopology(const string &file);
   void LoadEvents(const string &file);
 
+  void Init();
+
   void SendToNeighbors(const Node *src, const RoutingMessage *m);
   void SendToNeighbor(const Node *src, const Node *dest, const RoutingMessage *m);
 
   void DrawShortestPathTree(const Node *node) const;
   void WriteShortestPathTreeDot(const Node *node, const string &s) const;
   void DrawPath(const Link *l) const;
-  void WritePathDot(const Node *src, const Node *dest, const string &s) const;
+  void WritePathDot(const Node &src, const Node &dest, const string &s) const;
 
-  ostream &DumpTable(iostream &os, const Node *src) const;
+  void DumpTable(const Node *src);
 
   void DispatchEvent(Event *e);
 

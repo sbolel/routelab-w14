@@ -27,6 +27,8 @@ int main(int argc, char **argv)
 
   c.LoadEvents(eventfile);
 
+  c.Init();
+
   //cerr << c << endl;
   
   Event *e;

@@ -48,10 +48,12 @@ void Event::Dispatch()
   case CHANGE_LINK:
     ((Topology*)handler)->ChangeLink((Link*)data);
     break;
+  case TIMEOUT:
+    ((Node*)handler)->TimeOut();
+    break;
   case ROUTING_MESSAGE_ARRIVAL:
     ((Node*)handler)->ProcessIncomingRoutingMessage((RoutingMessage*)data);
     break;
-    
   default:
     cerr <<"Unknown event type\n";
     exit(-1);
@@ -77,6 +79,7 @@ ostream & Event::Print(ostream &os) const
      etype==DRAW_TREE ? "DRAW_TREE" :
      etype==DRAW_PATH ? "DRAW_PATH" :
      etype==DUMP_TABLE ? "DUMP_TABLE" :
+     etype==TIMEOUT ? "TIMEOUT" :
     etype==ROUTING_MESSAGE_ARRIVAL ? "ROUTING_MESSAGE_ARRIVAL" :
    "UNKNOWN") << ", ";
   switch (etype) { 
@@ -87,6 +90,7 @@ ostream & Event::Print(ostream &os) const
   case CHANGE_NODE:
   case DRAW_TREE:
   case DUMP_TABLE:
+  case TIMEOUT:
     os << *((Node*)data);
     break;
   case DRAW_PATH:
@@ -143,6 +147,7 @@ Event::~Event()
     case DELETE_NODE:
     case CHANGE_NODE:
     case DUMP_TABLE:
+    case TIMEOUT:
       delete (Node *) data;
       break;
     case ADD_LINK:

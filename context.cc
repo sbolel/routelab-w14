@@ -208,6 +208,15 @@ void SimulationContext::DumpTable(const Node *src)
 }
 
 
+void SimulationContext::TimeOut(const Node *src, const double timefromnow)
+{
+  PostEvent(new Event(GetTime()+timefromnow,
+		      TIMEOUT,
+		      FindMatchingNode(src),
+		      0));
+}
+		      
+
 void SimulationContext::SendToNeighbors(const Node *src, const RoutingMessage *m)
 {
   deque<Link*> *ll=GetOutgoingLinks(src);

@@ -1,9 +1,5 @@
 #include "messages.h"
 
-RoutingMessage & RoutingMessage::operator=(const RoutingMessage &rhs)
-{
-  return *(new(this)RoutingMessage(rhs));
-}
 
 #if defined(GENERIC)
 ostream &RoutingMessage::Print(ostream &os) const

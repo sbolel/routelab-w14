@@ -53,12 +53,14 @@ class Node {
   virtual void SendToNeighbors(const RoutingMessage *m);
   virtual void SendToNeighbor(const Node *n, const RoutingMessage *m);
   virtual deque<Node*> *GetNeighbors();
+  virtual void SetTimeOut(const double timefromnow);
 
   //
   // Students will WRITE THESE
   //
   virtual void LinkUpdate(const Link *l);
   virtual void ProcessIncomingRoutingMessage(const RoutingMessage *m);
+  virtual void TimeOut();
   virtual Node *GetNextHop(const Node *destination) const;
   virtual Table *GetRoutingTable() const;
 

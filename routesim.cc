@@ -3,19 +3,18 @@
 #include "node.h"
 #include "link.h"
 
-
+#include <iomanip>
 
 int main(int argc, char **argv)
 {
   bool singlestep;
   string topofile, eventfile;
 
-
-  if (argc<2 || argc>3 ) {
+  if (argc<3 || argc>4 ) {
     cerr <<"routesim topologyfile eventfile [singlestep]"<<endl;
     exit(-1);
   }
-  singlestep=(argc==3);
+  singlestep=(argc==4);
   topofile=argv[1];
   eventfile=argv[2];
   
@@ -31,10 +30,22 @@ int main(int argc, char **argv)
 
   //cerr << c << endl;
   
+  cerr << setprecision(20);
+
   Event *e;
   while ((e=c.GetEarliestEvent())) {
-    //    cerr << *e << endl;
+    if (singlestep) {
+      cerr << "=============================================================\n"
+	   << "======Dispatching: "<<*e << endl;
+    }
     c.DispatchEvent(e);
+    if (singlestep) { 
+      char buf[1024];
+      cerr << "======Done. Hit Enter to continue"; 
+      fflush(stdin);
+      fgets(buf,1024,stdin);
+
+    }
   }
 }
   

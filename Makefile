@@ -16,7 +16,7 @@ LIB_OBJS = node.o       \
            eventqueue.o \
 	   context.o    \
 
-EXEC_OBJS = routesim
+EXEC_OBJS = routesim.o
 
 OBJS = $(LIB_OBJS) $(EXEC_OBJS) 
 

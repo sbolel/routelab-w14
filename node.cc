@@ -54,6 +54,11 @@ deque<Node*> *Node::GetNeighbors()
   return context->GetNeighbors(this);
 }
 
+void Node::SetTimeOut(const double timefromnow)
+{
+  context->TimeOut(this,timefromnow);
+}
+
 
 bool Node::Matches(const Node &rhs) const
 {
@@ -65,8 +70,8 @@ bool Node::Matches(const Node &rhs) const
 void Node::LinkUpdate(const Link *l)
 {
   cerr << *this << " got a link update: "<<*l<<endl;
+  //Do Something generic:
   SendToNeighbors(new RoutingMessage);
-  //WRITE
 }
 
 
@@ -75,6 +80,11 @@ void Node::ProcessIncomingRoutingMessage(const RoutingMessage *m)
   cerr << *this << " got a routing messagee: "<<*m<<" Ignored "<<endl;
 }
 
+
+void Node::TimeOut()
+{
+  cerr << *this << " got a timeout: ignored"<<endl;
+}
 
 Node *Node::GetNextHop(const Node *destination) const
 {
@@ -129,6 +139,10 @@ void Node::ProcessIncomingRoutingMessage(const RoutingMessage *m)
   }
 }
 
+void Node::TimeOut()
+{
+  cerr << *this << " got a timeout: ignored"<<endl;
+}
 
 Node *Node::GetNextHop(const Node *destination) const
 {
@@ -212,6 +226,11 @@ void Node::ProcessIncomingRoutingMessage(const RoutingMessage *m)
   } else {
     cerr <<" ignored\n";
   }
+}
+
+void Node::TimeOut()
+{
+  cerr << *this << " got a timeout: ignored"<<endl;
 }
 
 

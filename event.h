@@ -36,7 +36,7 @@ inline ostream & operator<<(ostream &os, const Event &e) { return e.Print(os);}
 
 struct CompareEvents : public binary_function<Event *,Event *, bool> {
   inline bool operator ()(const Event *lhs, const Event *rhs) {
-    return rhs->IsLater(lhs);
+    return lhs->IsLater(rhs);
   }
 };
 

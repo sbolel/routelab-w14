@@ -6,11 +6,11 @@ void EventQueue::PostEvent(Event *e) {
 }
 
 Event * EventQueue::GetEarliestEvent() {
-  if (q.size()>=1) {
+  if (q.size()>0) {
     Event *e=q.top();
     q.pop();
     return e;
-  } else { 
+  } else {
     return 0;
   }
 }
@@ -22,13 +22,20 @@ EventQueue::~EventQueue() {
   }
 }
 
-ostream & EventQueue::Print(ostream &os) const
+ostream & EventQueue::Print(ostream &os)
 {
-  priority_queue<Event *, deque<Event *>, CompareEvents>::const_iterator i;
+  Event *e;
+  deque<Event *> tq;
+
   os <<"EventQueue(eventlist={";
-  for ( i=q.begin();
-       i!=q.end(); ++i) {
-    os<<**i<<", ";
+  while ((e=GetEarliestEvent())) {
+    tq.push_back(e);
+  }
+  while (tq.size()>0) { 
+    e=tq.front();
+    tq.pop_front();
+    os << (*e)<<", ";
+    q.push(e);
   }
   os << "})";
   return os;

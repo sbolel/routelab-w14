@@ -3,33 +3,33 @@
 #include "node.h"
 #include "link.h"
 
-class MyNode : public Node
-{
-
-};
 
 
-
-int main(int argc, char *argv)
+int main(int argc, char **argv)
 {
   bool singlestep;
   string topofile, eventfile;
 
 
   if (argc<2 || argc>3 ) {
-    cerr <<"routelab topologyfile eventfile [singlestep]"<<endl;
+    cerr <<"routesim topologyfile eventfile [singlestep]"<<endl;
     exit(-1);
   }
   singlestep=(argc==3);
   topofile=argv[1];
   eventfile=argv[2];
   
-  SimulationContext<MyNode,Link> c;
+  SimulationContext c;
 
   c.LoadTopology(topofile);
-  c.LoadEvents(eventfile);
   
-  Event<MyNode,Link> *e;
+  cerr << c <<endl;
+
+  c.LoadEvents(eventfile);
+
+  cerr << c << endl;
+  
+  Event *e;
   while ((e=c.GetEarliestEvent())) {
     cerr << *e << endl;
     c.DispatchEvent(e);

@@ -3,7 +3,7 @@
 
 Event::Event(double t, EventType e, void *h, void *d) :
   timestamp(t), etype(e), handler(h), data(d)
-{};
+{}
 
 
 void Event::Dispatch()
@@ -40,7 +40,7 @@ void Event::Dispatch()
 
 ostream & Event::Print(ostream &os) const
 {
-  os <<"Event(etype="<<
+  os <<"Event(timestamp="<<timestamp<<", etype="<<
     (etype==ADD_NODE ? "ADD_NODE" :
     etype==DELETE_NODE ? "DELETE_NODE" :
     etype==ADD_LINK ? "ADD_LINK" :

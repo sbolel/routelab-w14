@@ -18,13 +18,16 @@ void SimulationContext::LoadEvents(const string &file)
     exit(-1);
   }
   while (!feof(in)) {
-    char buf[1024];
+    char b[1024];
+    char *buf=b;
     char cmd[1024];
     unsigned num;
     unsigned src,dest;
     double lat, bw;
     double timestamp;
-    fgets(buf,1024,in);
+    if (!fgets(buf,1024,in)) {
+      break;
+    }
     if (strlen(buf)==0){
       continue;
     }
@@ -37,38 +40,40 @@ void SimulationContext::LoadEvents(const string &file)
     if (toupper(buf[0])=='#') {
       continue;
     }
+    fprintf(stderr,"%s",buf);
     sscanf(buf,"%lf %s",&timestamp,cmd);
-    if (strcasecmp(cmd,"ADD_Node")) {
+    if (!strcasecmp(cmd,"ADD_NODE")) {
       sscanf(buf,"%lf %s %u %lf %lf",&timestamp,cmd,&num,&lat,&bw);
-      PostEvent(new Event(timestamp,ADD_Node,this,new Node(num,bw,lat,this)));
+      PostEvent(new Event(timestamp,ADD_NODE,this,new Node(num,this,bw,lat)));
       continue;
     }
-    if (strcasecmp(cmd,"DELETE_Node")) {
+    if (!strcasecmp(cmd,"DELETE_NODE")) {
       sscanf(buf,"%lf %s %u %lf %lf",&timestamp,cmd,&num,&lat,&bw);
-      PostEvent(new Event(timestamp,DELETE_Node,this,new Node(num,bw,lat,this)));
+      PostEvent(new Event(timestamp,DELETE_NODE,this,new Node(num,this,bw,lat)));
       continue;
     }
-    if (strcasecmp(cmd,"CHANGE_Node")) {
+    if (!strcasecmp(cmd,"CHANGE_NODE")) {
       sscanf(buf,"%lf %s %u %lf %lf",&timestamp,cmd,&num,&lat,&bw);
-      PostEvent(new Event(timestamp,CHANGE_Node,this,new Node(num,bw,lat,this)));
+      PostEvent(new Event(timestamp,CHANGE_NODE,this,new Node(num,this,bw,lat)));
       continue;
     }
-    if (strcasecmp(cmd,"ADD_LINK")) {
+    if (!strcasecmp(cmd,"ADD_LINK")) {
       sscanf(buf,"%lf %s %u %u %lf %lf",&timestamp,cmd,&src,&dest,&lat,&bw);
-      PostEvent(new Event(timestamp,ADD_LINK,this,new Link(src,dest,bw,lat,this)));
+      PostEvent(new Event(timestamp,ADD_LINK,this,new Link(src,dest,this,bw,lat)));
       continue;
     }
-    if (strcasecmp(cmd,"DELETE_LINK")) {
+    if (!strcasecmp(cmd,"DELETE_LINK")) {
       sscanf(buf,"%lf %s %u %u %lf %lf",&timestamp,cmd,&src,&dest,&lat,&bw);
-      PostEvent(new Event(timestamp,DELETE_LINK,this,new Link(src,dest,bw,lat,this)));
+      PostEvent(new Event(timestamp,DELETE_LINK,this,new Link(src,dest,this,bw,lat)));
       continue;
     }
-    if (strcasecmp(cmd,"CHANGE_LINK")) {
+    if (!strcasecmp(cmd,"CHANGE_LINK")) {
       sscanf(buf,"%lf %s %u %u %lf %lf",&timestamp,cmd,&src,&dest,&lat,&bw);
-      PostEvent(new Event(timestamp,CHANGE_LINK,this,new Link(src,dest,bw,lat,this)));
+      PostEvent(new Event(timestamp,CHANGE_LINK,this,new Link(src,dest,this,bw,lat)));
       continue;
     }
   }
+  fclose(in);
 }
 
 void SimulationContext::LoadTopology(const string &file)
@@ -82,7 +87,7 @@ void SimulationContext::LoadTopology(const string &file)
   }
 }
 
-ostream & SimulationContext::Print(ostream &os) const
+ostream & SimulationContext::Print(ostream &os)
 {
   os << "SimulationContext(topology=";
   Topology::Print(os);
@@ -95,4 +100,10 @@ ostream & SimulationContext::Print(ostream &os) const
 
 void SimulationContext::DrawShortestPathTree(const Node *node) const
 {
+}
+
+void SimulationContext::DispatchEvent(Event *e)
+{
+  e->Dispatch();
+  e->Disassociate();
 }

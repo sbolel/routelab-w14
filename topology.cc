@@ -123,4 +123,22 @@ void Topology::DrawTopology() const
 }
 
 
+ostream &Topology::Print(ostream &os) const
+{
+  os << "Topology(nodes={";
+  for (deque<Node*>::const_iterator i=nodes.begin();
+       i!=nodes.end();
+       ++i) { 
+    os << **i <<",";
+  }
+  os <<"}, links={";
+  for (deque<Link*>::const_iterator i=links.begin();
+       i!=links.end();
+       ++i) { 
+    os << **i <<",";
+  }
+  os <<"})";
+  return os;
+}
+
   

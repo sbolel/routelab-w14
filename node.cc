@@ -64,3 +64,10 @@ Table *Node::GetRoutingTable() const
   // WRITE
   return 0;
 }
+
+
+ostream & Node::Print(ostream &os) const
+{
+  os << "Node(number="<<number<<", bw="<<bw<<", lat="<<lat<<")";
+  return os;
+}

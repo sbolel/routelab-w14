@@ -21,13 +21,13 @@ class SimulationContext : public Topology, public EventQueue
 
   void DrawShortestPathTree(const Node *node) const;
 
-  void DispatchEvent(Event *event);
+  void DispatchEvent(Event *e);
 
-  ostream &Print(ostream &os) const;
+  ostream &Print(ostream &os);
 
 };
 
-inline ostream & operator<<(ostream &os, const SimulationContext &s)
+inline ostream & operator<<(ostream &os, SimulationContext &s)
 { return s.Print(os); }
 
 

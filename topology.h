@@ -2,6 +2,7 @@
 #define _topology
 
 #include <deque>
+#include <string>
 
 #include "node.h"
 #include "link.h"
@@ -31,6 +32,7 @@ class Topology
   void DeleteLink(const Link *n);
   void ChangeLink(const Link *n);
 
+  void WriteDot(const string &fn) const;
   void DrawTopology() const;
 
   ostream & Print(ostream &os) const;

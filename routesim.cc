@@ -23,11 +23,11 @@ int main(int argc, char **argv)
 
   c.LoadTopology(topofile);
   
-  cerr << c <<endl;
+  //cerr << c <<endl;
 
   c.LoadEvents(eventfile);
 
-  cerr << c << endl;
+  //cerr << c << endl;
   
   Event *e;
   while ((e=c.GetEarliestEvent())) {

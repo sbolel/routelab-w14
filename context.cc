@@ -40,8 +40,30 @@ void SimulationContext::LoadEvents(const string &file)
     if (toupper(buf[0])=='#') {
       continue;
     }
-    fprintf(stderr,"%s",buf);
+    //fprintf(stderr,"%s",buf);
     sscanf(buf,"%lf %s",&timestamp,cmd);
+    if (!strcasecmp(cmd,"DRAW_TOPOLOGY")) {
+      sscanf(buf,"%lf %s",&timestamp,cmd);
+      PostEvent(new Event(timestamp,DRAW_TOPOLOGY,this,0));
+      continue;
+    }
+    if (!strcasecmp(cmd,"WRITE_TOPOLOGY")) {
+      char file[1024];
+      sscanf(buf,"%lf %s %s",&timestamp,cmd,file);
+      PostEvent(new Event(timestamp,WRITE_TOPOLOGY,this,new string(file)));
+      continue;
+    }
+    if (!strcasecmp(cmd,"DRAW_TREE")) {
+      sscanf(buf,"%lf %s %u",&timestamp,cmd,&num);
+      PostEvent(new Event(timestamp,DRAW_TREE,this,new Node(num,this,0,0)));
+      continue;
+    }
+    if (!strcasecmp(cmd,"WRITE_TREE")) {
+      char file[1024];
+      sscanf(buf,"%lf %s %s",&timestamp,cmd,file);
+      PostEvent(new Event(timestamp,WRITE_TREE,this,new string(file)));
+      continue;
+    }
     if (!strcasecmp(cmd,"ADD_NODE")) {
       sscanf(buf,"%lf %s %u %lf %lf",&timestamp,cmd,&num,&lat,&bw);
       PostEvent(new Event(timestamp,ADD_NODE,this,new Node(num,this,bw,lat)));
@@ -106,4 +128,8 @@ void SimulationContext::DispatchEvent(Event *e)
 {
   e->Dispatch();
   e->Disassociate();
+}
+
+void SimulationContext::WriteShortestPathTreeDot(const string &s) const
+{
 }

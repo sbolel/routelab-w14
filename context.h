@@ -20,6 +20,7 @@ class SimulationContext : public Topology, public EventQueue
   void LoadEvents(const string &file);
 
   void DrawShortestPathTree(const Node *node) const;
+  void WriteShortestPathTreeDot(const string &s) const;
 
   void DispatchEvent(Event *e);
 

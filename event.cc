@@ -1,5 +1,5 @@
 #include "event.h"
-
+#include "context.h"
 
 Event::Event(double t, EventType e, void *h, void *d) :
   timestamp(t), etype(e), handler(h), data(d)
@@ -9,6 +9,18 @@ Event::Event(double t, EventType e, void *h, void *d) :
 void Event::Dispatch()
 {
   switch (etype) { 
+  case DRAW_TOPOLOGY:
+    ((Topology*)handler)->DrawTopology();
+    break;
+  case WRITE_TOPOLOGY:
+    ((Topology*)handler)->WriteDot(*(string*)data);
+    break;
+  case DRAW_TREE:
+    ((SimulationContext*)handler)->DrawShortestPathTree((Node*)data);
+    break;
+  case WRITE_TREE:
+    ((SimulationContext*)handler)->WriteShortestPathTreeDot(*(string*)data);
+    break;
   case ADD_NODE:
     ((Topology*)handler)->AddNode((Node*)data);
     break;
@@ -42,17 +54,28 @@ ostream & Event::Print(ostream &os) const
 {
   os <<"Event(timestamp="<<timestamp<<", etype="<<
     (etype==ADD_NODE ? "ADD_NODE" :
-    etype==DELETE_NODE ? "DELETE_NODE" :
-    etype==ADD_LINK ? "ADD_LINK" :
-    etype==DELETE_LINK ? "DELETE_LINK" :
-    etype==CHANGE_NODE ? "CHANGE_NODE" :
-    etype==CHANGE_LINK ? "CHANGE_LINK" :
+     etype==DELETE_NODE ? "DELETE_NODE" :
+     etype==ADD_LINK ? "ADD_LINK" :
+     etype==DELETE_LINK ? "DELETE_LINK" :
+     etype==CHANGE_NODE ? "CHANGE_NODE" :
+     etype==CHANGE_LINK ? "CHANGE_LINK" :
+     etype==WRITE_TOPOLOGY ? "WRITE_TOPOLOGY" :
+     etype==DRAW_TOPOLOGY ? "DRAW_TOPOLOGY" :
+     etype==WRITE_TREE ? "WRITE_TREE" :
+     etype==DRAW_TREE ? "DRAW_TREE" :
     etype==ROUTING_MESSAGE_ARRIVAL ? "ROUTING_MESSAGE_ARRIVAL" :
    "UNKNOWN") << ", ";
   switch (etype) { 
+  case DRAW_TOPOLOGY:
+    break;
+  case WRITE_TOPOLOGY:
+  case WRITE_TREE:
+    os <<*((string*)data);
+    break;
   case ADD_NODE:
   case DELETE_NODE:
   case CHANGE_NODE:
+  case DRAW_TREE:
     os << *((Node*)data);
     break;
   case ADD_LINK:
@@ -82,6 +105,13 @@ Event::~Event()
 {
   if (data) { 
     switch (etype) { 
+    case DRAW_TOPOLOGY:
+      break;
+    case WRITE_TOPOLOGY:
+    case WRITE_TREE:
+      delete (string *)data;
+      break;
+    case DRAW_TREE:
     case ADD_NODE:
     case DELETE_NODE:
     case CHANGE_NODE:

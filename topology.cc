@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "topology.h"
 
 
@@ -116,10 +117,30 @@ void Topology::ChangeLink(const Link *l)
   }
 }
 
+void Topology::WriteDot(const string &n) const 
+{
+  FILE *out = fopen(n.c_str(),"w");
+  if (out==0) { 
+    return;
+  } 
+  fprintf(out,"digraph topo {\n");
+  for (deque<Node*>::const_iterator i=nodes.begin(); i!=nodes.end();++i) {
+    fprintf(out,"%u\n",(*i)->GetNumber());
+  }
+  for (deque<Link*>::const_iterator i=links.begin(); i!=links.end();++i) {
+    fprintf(out,"%u -> %u [ label=\"%5.1lf\" ];\n",(*i)->GetSrc(),(*i)->GetDest(), (*i)->GetLatency());
+  }
+  fprintf(out,"}\n");
+  fclose(out);
+}
+
+
 
 void Topology::DrawTopology() const
 {
-  
+  WriteDot(string("_topo.in"));
+  system("dot _topo.in > _topo.out");
+  system("dotty _topo.out");
 }
 
 

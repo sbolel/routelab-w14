@@ -31,7 +31,7 @@ int main(int argc, char **argv)
   
   Event *e;
   while ((e=c.GetEarliestEvent())) {
-    cerr << *e << endl;
+    //    cerr << *e << endl;
     c.DispatchEvent(e);
   }
 }

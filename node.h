@@ -5,11 +5,10 @@
 #include <iostream>
 #include <deque>
 
-#include "table.h"
-#include "messages.h"
 
-#include "link.h"
-
+class RoutingMessage;
+class Table;
+class Link;
 class SimulationContext;
 
 using namespace std;
@@ -20,6 +19,11 @@ class Node {
   SimulationContext    *context;
   double   bw;
   double   lat;
+
+#if defined(LINKSTATE)
+  static const unsigned maxttl;
+  unsigned seqno;
+#endif
   
   // students will add protocol-specific data here
 

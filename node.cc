@@ -61,7 +61,7 @@ bool Node::Matches(const Node &rhs) const
 }
 
 
-
+#if defined(GENERIC)
 void Node::LinkUpdate(const Link *l)
 {
   cerr << *this << " got a link update: "<<*l<<endl;
@@ -95,3 +95,60 @@ ostream & Node::Print(ostream &os) const
   os << "Node(number="<<number<<", lat="<<lat<<", bw="<<bw<<")";
   return os;
 }
+
+#endif
+
+#if defined(LINKSTATE)
+
+const unsigned Node::maxttl=5;
+
+void Node::LinkUpdate(const Link *l)
+{
+  // Add To table and update graph
+  // Now flood to rest of network
+  cerr << *this<<": Link Update: "<<*l<<endl;
+  RoutingMessage *m = new RoutingMessage(*this,*l,maxttl,seqno++);
+  SendToNeighbors(m);
+}
+
+
+void Node::ProcessIncomingRoutingMessage(const RoutingMessage *m)
+{
+  cerr << *this << " Routing Message: "<<*m;
+  if (m->srcnode.Matches(*this)) {
+    // skip, one of ours
+    cerr << " IGNORED"<<endl;
+  } else {
+    // update our table
+    if (m->ttl==0) { 
+      cerr << " DROPPED, TTL=0"<<endl;
+    } else {
+      // Forward to neighbors
+      RoutingMessage *out=new RoutingMessage(*m);
+      out->ttl--;
+      cerr << " FORWARDED"<<endl;
+      SendToNeighbors(out);
+    }
+  }
+}
+
+
+Node *Node::GetNextHop(const Node *destination) const
+{
+  // WRITE
+  return 0;
+}
+
+Table *Node::GetRoutingTable() const
+{
+  // WRITE
+  return 0;
+}
+
+
+ostream & Node::Print(ostream &os) const
+{
+  os << "Node(number="<<number<<", lat="<<lat<<", bw="<<bw<<")";
+  return os;
+}
+#endif

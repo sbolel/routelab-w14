@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <hash_map>
 #include "context.h"
 
 
@@ -139,8 +140,13 @@ ostream & SimulationContext::Print(ostream &os)
 }
 
 
+
+
 void SimulationContext::DrawShortestPathTree(const Node *node) const
 {
+  WriteShortestPathTreeDot(node,"_tree.in");
+  system("dot _tree.in > _tree.out");
+  system("dotty _tree.out");
 }
 
 void SimulationContext::DispatchEvent(Event *e)
@@ -150,9 +156,45 @@ void SimulationContext::DispatchEvent(Event *e)
   delete e;
 }
 
+
+struct link_hash {
+  size_t operator() ( const Link &l) const { return (l.GetSrc()<<16) + (l.GetDest()); }
+};
+
+struct link_eq {
+  bool operator() ( const Link &l, const Link &r) const { return (l.GetSrc()==r.GetSrc()) && (l.GetDest()==r.GetDest()); }
+};
+
+
 void SimulationContext::WriteShortestPathTreeDot(const Node *src, const string &s) const
 {
-  // NOT DONE
+  FILE *out = fopen(s.c_str(),"w");
+  if (out==0) { 
+    return;
+  } 
+  // Yes, this is hideously slow
+  hash_map<Link,int,link_hash,link_eq> treelinks;
+  deque<Link> path;
+  for (deque<Node*>::const_iterator i=nodes.begin();i!=nodes.end();++i) { 
+    path.clear();
+    CollectPathLinks(*src,**i,path);
+    for (deque<Link>::const_iterator j=path.begin();j!=path.end();++j) {
+      treelinks[*j]=1;
+    }
+  }
+  fprintf(out,"digraph tree {\n");
+  for (deque<Node*>::const_iterator i=nodes.begin(); i!=nodes.end();++i) {
+    fprintf(out,"%u\n",(*i)->GetNumber());
+  }
+  for (deque<Link*>::const_iterator i=links.begin(); i!=links.end();++i) {
+    fprintf(out,"%u -> %u [ label=\"%5.1lf\" ];\n",(*i)->GetSrc(),(*i)->GetDest(), (*i)->GetLatency());
+  }
+  for (hash_map<Link,int,link_hash,link_eq>::const_iterator i=treelinks.begin();i!=treelinks.end();++i) {
+    Link l = (*i).first;
+    fprintf(out,"%u -> %u [ color=red ];\n",l.GetSrc(),l.GetDest());
+  }
+  fprintf(out,"}\n");
+  fclose(out);
 }
 
 void SimulationContext::WritePathDot(const Node &src, const Node &dest, const string &s) const
@@ -162,24 +204,7 @@ void SimulationContext::WritePathDot(const Node &src, const Node &dest, const st
     return;
   } 
   deque<Link> path;
-  Node *n=((SimulationContext*)this)->FindMatchingNode(&src);
-  if (n==0) { 
-    fclose(out);
-    return;
-  }
-  unsigned last=n->GetNumber();
-  while (n->GetNumber()!=dest.GetNumber()) {
-    if (n->GetNextHop(&dest)==0) {
-      break;
-    }
-    n=((SimulationContext *)this)->FindMatchingNode(n->GetNextHop(&dest));
-    if (n==0) {
-      break;
-    }
-    path.push_back(Link(last,n->GetNumber(),0,0,0));
-    last=n->GetNumber();
-  }
-  
+  CollectPathLinks(src,dest,path);
   fprintf(out,"digraph path {\n");
   for (deque<Node*>::const_iterator i=nodes.begin(); i!=nodes.end();++i) {
     fprintf(out,"%u\n",(*i)->GetNumber());
@@ -199,6 +224,29 @@ void SimulationContext::DrawPath(const Link *p) const
   WritePathDot(Node(p->GetSrc(),0,0,0),Node(p->GetDest(),0,0,0),string("_path.in"));
   system("dot _path.in > _path.out");
   system("dotty _path.out");
+}
+
+
+void SimulationContext::CollectPathLinks(const Node &src, const Node &dest, deque<Link> &path) const
+{
+  Node *n=((SimulationContext*)this)->FindMatchingNode(&src);
+  if (n==0) { 
+    return;
+  }
+  unsigned last=n->GetNumber();
+  while (n->GetNumber()!=dest.GetNumber()) {
+    if (n->GetNextHop(&dest)==0) {
+      break;
+    }
+    n=((SimulationContext *)this)->FindMatchingNode(n->GetNextHop(&dest));
+    if (n==0) {
+      break;
+    }
+    //    cerr << last <<" -> " << n->GetNumber()<<endl;
+    path.push_back(Link(last,n->GetNumber(),0,0,0));
+    last=n->GetNumber();
+  }
+ 
 }
 
 

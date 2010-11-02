@@ -1,5 +1,7 @@
 #include <stdio.h>
-#include <hash_map>
+#include <stdlib.h>
+#include <string.h>
+#include <map>
 #include "context.h"
 
 
@@ -30,7 +32,7 @@ void SimulationContext::LoadEvents(const string &file)
       break;
     }
     if (strlen(buf)==0){
-      continue;
+	continue;
     }
     while (isspace(*buf)) { 
       buf++;
@@ -129,9 +131,9 @@ void SimulationContext::LoadEvents(const string &file)
 
 void SimulationContext::Init()
 {
-  for (deque<Link*>::const_iterator i=links.begin();i!=links.end();++i) { 
-    PostEvent(new Event(-9999999999, CHANGE_LINK,this,new Link(**i)));
-  }
+    for (deque<Link*>::const_iterator i=links.begin();i!=links.end();++i) { 
+	PostEvent(new Event(0x80000000, CHANGE_LINK,this,new Link(**i)));
+    }
 }
 
 void SimulationContext::LoadTopology(const string &file)
@@ -172,9 +174,6 @@ void SimulationContext::DispatchEvent(Event *e)
 }
 
 
-struct link_hash {
-  size_t operator() ( const Link &l) const { return (l.GetSrc()<<16) + (l.GetDest()); }
-};
 
 struct link_eq {
   bool operator() ( const Link &l, const Link &r) const { return (l.GetSrc()==r.GetSrc()) && (l.GetDest()==r.GetDest()); }
@@ -189,7 +188,7 @@ void SimulationContext::WriteShortestPathTreeDot(const Node *src, const string &
     return;
   } 
   // Yes, this is hideously slow
-  hash_map<Link,int,link_hash,link_eq> treelinks;
+  map<Link, int, link_eq> treelinks;
   deque<Link> path;
   for (deque<Node*>::const_iterator i=nodes.begin();i!=nodes.end();++i) { 
     path.clear();
@@ -211,7 +210,7 @@ void SimulationContext::WriteShortestPathTreeDot(const Node *src, const string &
   for (deque<Link>::const_iterator i=realtree.begin(); i!=realtree.end();++i) {
     fprintf(out,"%u -> %u [ color=blue ];\n",(*i).GetSrc(),(*i).GetDest());
   }
-  for (hash_map<Link,int,link_hash,link_eq>::const_iterator i=treelinks.begin();i!=treelinks.end();++i) {
+  for (map<Link,int,link_eq>::const_iterator i=treelinks.begin();i!=treelinks.end();++i) {
     Link l = (*i).first;
     fprintf(out,"%u -> %u [ color=red ];\n",l.GetSrc(),l.GetDest());
     bool found=false;

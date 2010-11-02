@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "context.h"
 
 #include "node.h"

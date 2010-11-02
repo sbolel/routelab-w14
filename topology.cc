@@ -1,5 +1,6 @@
 #include <vector>
 #include <stdio.h>
+#include <stdlib.h>
 #include "topology.h"
 
 
@@ -56,14 +57,12 @@ deque<Link*> * Topology::GetOutgoingLinks(const Node *src)
   return out;
 }
 
-deque<Node*> *Topology::GetNeighbors(const Node *n)
-{
-  deque<Link*> *temp = GetOutgoingLinks(n);
-  deque<Node*> *nodes = new deque<Node*>;
+deque<Node *> * Topology::GetNeighbors(const Node * n) {
+  deque<Link *> * temp = GetOutgoingLinks(n);
+  deque<Node *> * nodes = new deque<Node *>;
 
-  for (deque<Link*>::iterator i=temp->begin();
-	   i!=temp->end(); ++i) { 
-    nodes->push_back(FindMatchingNode(&Node((*i)->GetDest(),0,0,0)));
+  for (deque<Link *>::iterator i = temp->begin(); i != temp->end(); ++i) { 
+      nodes->push_back(FindMatchingNode(&Node((*i)->GetDest(), 0, 0, 0)));
   }
   return nodes;
 }

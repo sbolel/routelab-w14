@@ -172,9 +172,6 @@ void Node::LinkUpdate(const Link *l)
   // update our table
   // send out routing mesages
   cerr << *this<<": Link Update: "<<*l<<endl;
-  table.SetNext(l->GetDest(),Row(l->GetDest(),l->GetDest(),l->GetLatency()));
-  RoutingMessage *m = new RoutingMessage(*this,Node(l->GetDest(),0,0,0),l->GetLatency());
-  SendToNeighbors(m);
 }
 
 
@@ -188,44 +185,6 @@ void Node::ProcessIncomingRoutingMessage(const RoutingMessage *m)
     return;
   }
 
-  Row *rd=table.GetNext(m->dest.GetNumber());
-  Row *rs=table.GetNext(m->srcnode.GetNumber());
-
-  if (rs==0) { 
-    // Unlikely since we must have gotten a link update
-    cerr << " UNKNOWN NEIGHBOR - ignored"<<endl;
-    return;
-  }
-  double newcost = rs->cost+m->cost;
-  cerr << " our cost is "<<newcost;
-  bool doupdate=false;
-
-  if (rd==0) {
-    // New destination
-    doupdate=true;
-    cerr <<" New destination - updating and sending\n";
-  }
-
-  if (rd && newcost<rd->cost) {
-    doupdate=true;
-    cerr <<" New lower cost - updating and sending\n";
-  }
-
-  if (rd && rd->next_node==m->dest.GetNumber()) { 
-    doupdate=true;
-    cerr << " Changed cost on existing node - updating and sending\n";
-  }
-
-  if (doupdate) {
-    table.SetNext(m->dest.GetNumber(),Row(m->dest.GetNumber(),m->srcnode.GetNumber(),newcost));
-    // news to us, let's resend it
-    RoutingMessage *mout=new RoutingMessage(*m);
-    mout->srcnode=*this;
-    mout->cost+=newcost;
-    SendToNeighbors(mout);
-  } else {
-    cerr <<" ignored\n";
-  }
 }
 
 void Node::TimeOut()
@@ -236,19 +195,10 @@ void Node::TimeOut()
 
 Node *Node::GetNextHop(const Node *destination) const
 {
-  Row *r = ((Node *)this)->table.GetNext(destination->GetNumber());
-  if (r==0) {
-    return 0;
-  } else {
-    Node *n=new Node(r->next_node,0,0,0);
-    delete r;
-    return n;
-  }
 }
 
 Table *Node::GetRoutingTable() const
 {
-  return new Table(table);
 }
 
 

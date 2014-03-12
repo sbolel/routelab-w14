@@ -17,34 +17,14 @@ ostream & Table::Print(ostream &os) const
 
 deque<Row>::iterator Table::FindMatching(const unsigned dest) 
 {
-  deque<Row>::iterator i;
-
-  for (i=m.begin();i!=m.end();++i) {
-    if ((*i).dest_node==dest) {
-      break;
-    }
-  } 
-  return i;
 }
 
 Row *Table::GetNext(const unsigned dest) 
 {
-  deque<Row>::iterator i=FindMatching(dest);
-  if (i==m.end()) { 
-    return 0;
-  } else {
-    return new Row(*i);
-  }
 }
 
 void Table::SetNext(const unsigned dest, const Row &r)
 {
-  deque<Row>::iterator i = FindMatching(dest);
-  if (i==m.end()) { 
-    m.push_back(r);
-  } else {
-    *i=r;
-  }
 }
 
 Row::Row(const unsigned dest, const unsigned next, const double c) :

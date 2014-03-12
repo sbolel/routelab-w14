@@ -132,7 +132,8 @@ void SimulationContext::LoadEvents(const string &file)
 void SimulationContext::Init()
 {
     for (deque<Link*>::const_iterator i=links.begin();i!=links.end();++i) { 
-	PostEvent(new Event(0x80000000, CHANGE_LINK,this,new Link(**i)));
+	//PostEvent(new Event(0x80000000, CHANGE_LINK,this,new Link(**i)));
+	PostEvent(new Event(0.1, CHANGE_LINK,this,new Link(**i)));
     }
 }
 

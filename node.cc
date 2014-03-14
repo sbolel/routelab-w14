@@ -180,7 +180,8 @@ void Node::LinkUpdate(const Link *l)
   // send out routing mesages
   cerr << *this<<": Link Update: "<<*l<<endl;
   SetCost(l->GetDest(), l->GetLatency());
-  
+  deque<Node*> * neighbors = GetNeighbors();
+  neighborTable[]
 }
 
 

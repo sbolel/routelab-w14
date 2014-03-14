@@ -264,7 +264,22 @@ void Node::ProcessIncomingRoutingMessage(const RoutingMessage *m)
   cerr << "Node "<<GetNumber()<<": "<<m->srcnode.GetNumber()<<" has new cost "<<m->cost
        <<" path to "<<m->dest.GetNumber()<<" Action: ";
 
-  
+  map<unsigned, vector<Row> >::iterator it = neighborTable.find(m->srcnode.GetNumber());
+  if(it != neighborTable.end()){
+    //rewrite the cost in the corresponding entry in the existing mapping to the new least-cost
+    for(unsigned count = 0; count < neighborTable[m->srcnode.GetNumber()].size(); ++count){
+      if(neighborTable[m->srcnode.GetNumber()][count].dest_node == m->dest.GetNumber()){
+        //this is the right entry
+        neighborTable[m->srcnode.GetNumber()][count].cost = m->cost; //rewrite cost
+      }
+    }
+    //if mapping doesn't have entry for this dest, make a new one
+    //here, recalculate least-cost like in linkUpdate
+  } else {
+    //make a new neighborTable entry for this neighbor
+    neighborTable[m->srcnode.GetNumber()] = vector<Row>();
+    neighborTable[m->srcnode.GetNumber()].push_back(Row(m->dest.GetNumber(), m->dest.GetNumber(), m->cost));
+  }
 /*
   if (m->dest.GetNumber()==GetNumber()) { 
     cerr << " ourself - ignored\n";

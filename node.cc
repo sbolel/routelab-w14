@@ -274,7 +274,38 @@ void Node::ProcessIncomingRoutingMessage(const RoutingMessage *m)
       }
     }
     //if mapping doesn't have entry for this dest, make a new one
+
     //here, recalculate least-cost like in linkUpdate
+    double c;
+    double min = 0;
+    deque<Node*>* neighbors = GetNeighbors();
+    for(deque<Node*>::iterator i = neighbors->begin(); i != neighbors->end(); ++i){
+      double n_to_dst = 0;
+      if(m->dest.GetNumber()==(*i)->GetNumber()){
+        n_to_dst = 0;
+      } else {
+        if(neighborTable.find((*i)->GetNumber()) != neighborTable.end()){
+          //the neighbor has an entry in the map
+          for(unsigned count = 0; count < neighborTable[(*i)->GetNumber()].size(); ++count){
+            //loop through the neighbor's table to find the entry for this dest
+            if(neighborTable[(*i)->GetNumber()][count].dest_node == dst){
+              n_to_dst = neighborTable[(*i)->GetNumber()][count].cost;
+            }
+          }//out of loop, check to see if we found an entry
+          if(n_to_dst == 0){
+            continue; //move on to next neighbor
+          }
+        } else {
+          cout << "For some reason, there's no entry in the neighborTable for this neighbor" << endl;
+          continue;
+        }
+      }
+      c = n_to_dst + FindCost((*i)->GetNumber());
+      if(min == 0 || c < min){
+        min = c;
+        min_node = (*i)->GetNumber();
+      }
+    }
   } else {
     //make a new neighborTable entry for this neighbor
     neighborTable[m->srcnode.GetNumber()] = vector<Row>();

@@ -217,6 +217,7 @@ void Node::LinkUpdate(const Link *l)
     }
     if(min != it->cost){
       //least-cost has changed
+      cerr << "Least-cost has changed" << endl;
       it->cost = min;
       it->next_node = min_node;
       SendToNeighbors(new RoutingMessage(*this, Node(it->dest_node, 0, 0, 0), min));

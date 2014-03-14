@@ -41,8 +41,9 @@ struct Row {
 inline ostream & operator<<(ostream &os, const Row &r) { return r.Print(os);}
 
 class Table {
+public:
   deque<Row> m;
- public:
+
   Table() : m()
   {
 

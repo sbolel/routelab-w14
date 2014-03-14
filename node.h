@@ -5,7 +5,7 @@
 #include <iostream>
 #include <deque>
 #include <map>
-#include <set>
+#include <vector>
 
 
 class RoutingMessage;
@@ -31,7 +31,7 @@ class Node {
 
 #if defined(DISTANCEVECTOR)
   Table table;
-  map<unsigned, vector<Row>> neighborTable;
+  map<unsigned, vector<Row> > neighborTable;
   //map<unsigned, Table> neighborTable;
   vector<Row> costs;
 #endif
@@ -66,7 +66,7 @@ class Node {
   virtual void LinkUpdate(const Link *l);
   virtual void ProcessIncomingRoutingMessage(const RoutingMessage *m);
   virtual void TimeOut();
-  virtual Node *GetNextHop(const Node *destination) const;
+  virtual Node *GetNextHop(const Node *destination);
   virtual Table *GetRoutingTable() const;
 
   virtual ostream & Print(ostream &os) const;

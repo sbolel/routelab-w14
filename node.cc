@@ -180,21 +180,68 @@ void Node::LinkUpdate(const Link *l)
   // send out routing mesages
   cerr << *this<<": Link Update: "<<*l<<endl;
   SetCost(l->GetDest(), l->GetLatency());
+  deque<Row>::iterator it = table.m.begin();
+  deque<Node*>* neighbors = GetNeighbors();
+  double min;
+  unsigned min_node;
+  double c;
+  bool changed = false;
+  for( ; it != table.m.end(); ++it){
+    unsigned dst = it->dest_node;
+    min = 0;
+    for(deque<Node*>::iterator i = neighbors->begin(); i != neighbors->end(); ++i){
+      double n_to_dst = 0;
+      if(dst==(*i)->GetNumber()){
+        n_to_dst = 0;
+      } else { //the destination we're checking is not this neighbor, lookup the dest in the neighbor's table
+        if(neighborTable.find((*i)->GetNumber()) != neighborTable.end()){
+          //the neighbor has an entry in the map
+          for(unsigned count = 0; count < neighborTable[(*i)->GetNumber()].size(); ++count){
+            //loop through the neighbor's table to find the entry for this dest
+            if(neighborTable[(*i)->GetNumber()][count].dest_node == dst){
+              n_to_dst = neighborTable[(*i)->GetNumber()][count].cost;
+            }
+          }//out of loop, check to see if we found an entry
+          if(n_to_dst == 0){
+            continue; //move on to next neighbor
+          }
+        } else {
+          cout << "For some reason, there's no entry in the neighborTable for this neighbor" << endl;
+        }
+      }
+      c = n_to_dst + FindCost((*i)->GetNumber());
+      if(min == 0 || c < min){
+        min = c;
+        min_node = (*i)->GetNumber();
+      }
+    }
+    if(min != it->cost){
+      //least-cost has changed
+      it->cost = min;
+      it->next_node = min_node;
+      SendToNeighbors(new RoutingMessage(*this, Node(it->dest_node, 0, 0, 0), min));
+    }
+  }
+  /*
   deque<Node*> * neighbors = GetNeighbors();
   set<unsigned> updatedDists;
 
   double min;
+  
   for(map<unsigned, vector<Row>>::iterator i = neighborTable.begin(); i != neighborTable.end(); ++i){
     vector<Row> ntable = i->second;
     for(unsigned count = 0; count < ntable.size(); ++count){
-      if(updatedDists.find(ntable[count].dest_node) == updateDists.end()){
+      if(updatedDists.find(ntable[count].dest_node) == updatedDists.end()){
         //if we have not already looked at this destination
         min = 0;
+        for
         double this_cost = FindCost()
       }
     }
   }
   neighborTable[]
+  */
+
 }
 
 
@@ -215,14 +262,23 @@ void Node::TimeOut()
   cerr << *this << " got a timeout: ignored"<<endl;
 }
 
-
-Node *Node::GetNextHop(const Node *destination) const
+Node *Node::GetNextHop(const Node *destination)
 {
-
+  // WRITE
+  deque<Row>::const_iterator next = table.FindMatching(destination->GetNumber());
+  deque<Node*>* neighbors = GetNeighbors();
+  for(deque<Node*>::iterator i = neighbors->begin(); i != neighbors->end(); ++i){
+    if((*i)->GetNumber() == next->next_node){
+      return new Node((**i));
+    }
+  }
+  return 0;
 }
 
 Table *Node::GetRoutingTable() const
 {
+  // WRITE
+  return new Table(table);
 }
 
 

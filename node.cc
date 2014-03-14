@@ -266,14 +266,19 @@ void Node::ProcessIncomingRoutingMessage(const RoutingMessage *m)
 
   map<unsigned, vector<Row> >::iterator it = neighborTable.find(m->srcnode.GetNumber());
   if(it != neighborTable.end()){
+    bool found = false;
     //rewrite the cost in the corresponding entry in the existing mapping to the new least-cost
     for(unsigned count = 0; count < neighborTable[m->srcnode.GetNumber()].size(); ++count){
       if(neighborTable[m->srcnode.GetNumber()][count].dest_node == m->dest.GetNumber()){
         //this is the right entry
         neighborTable[m->srcnode.GetNumber()][count].cost = m->cost; //rewrite cost
+        found = true;
       }
     }
     //if mapping doesn't have entry for this dest, make a new one
+    if (found==false){
+      neighborTable[m->srcnode.GetNumber()].push_back(Row(m->dest.GetNumber(), m->dest.GetNumber(), m->cost));
+    }
 
     //here, recalculate least-cost like in linkUpdate
     double c;
@@ -306,6 +311,9 @@ void Node::ProcessIncomingRoutingMessage(const RoutingMessage *m)
         min_node = (*i)->GetNumber();
       }
     }
+    
+    //here, recalculate least-cost like in linkUpdate
+
   } else {
     //make a new neighborTable entry for this neighbor
     neighborTable[m->srcnode.GetNumber()] = vector<Row>();

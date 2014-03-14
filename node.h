@@ -4,6 +4,7 @@
 #include <new>
 #include <iostream>
 #include <deque>
+#include <map>
 
 
 class RoutingMessage;
@@ -29,6 +30,8 @@ class Node {
 
 #if defined(DISTANCEVECTOR)
   Table table;
+  map<unsigned, vector<Row>> neighborTable;
+  vector<Row> costs;
 #endif
   
   // students will add protocol-specific data here
@@ -65,6 +68,9 @@ class Node {
   virtual Table *GetRoutingTable() const;
 
   virtual ostream & Print(ostream &os) const;
+
+  virtual double FindCost(const unsigned dest);
+  virtual void SetCost(const unsigned dest, const double c);
 
 };
 

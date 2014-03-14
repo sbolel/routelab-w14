@@ -147,13 +147,20 @@ void Node::TimeOut()
 Node *Node::GetNextHop(const Node *destination) const
 {
   // WRITE
+  deque<Row>::iterator next = table.FindMatching(destination->GetNumber());
+  deque<Node*>* neighbors = GetNeighbors();
+  for(deque<Node*>::iterator i = m->begin(); i != m->end(); ++i){
+    if((*i)->GetNumber() == next->next_node){
+      return new Node((**i));
+    }
+  }
   return 0;
 }
 
 Table *Node::GetRoutingTable() const
 {
   // WRITE
-  return 0;
+  return new Table(table);
 }
 
 
@@ -172,6 +179,8 @@ void Node::LinkUpdate(const Link *l)
   // update our table
   // send out routing mesages
   cerr << *this<<": Link Update: "<<*l<<endl;
+  SetCost(l->GetDest(), l->GetLatency());
+  
 }
 
 
@@ -195,6 +204,7 @@ void Node::TimeOut()
 
 Node *Node::GetNextHop(const Node *destination) const
 {
+
 }
 
 Table *Node::GetRoutingTable() const
@@ -207,5 +217,25 @@ ostream & Node::Print(ostream &os) const
   os << "Node(number="<<number<<", lat="<<lat<<", bw="<<bw;
   os << ", table="<<table<<")";
   return os;
+}
+
+double Node::FindCost(const unsigned dest)
+{
+  for(unsigned i = 0; i < costs.size(); ++i){
+    if(costs[i].dest_node == dest){
+      return costs[i].cost;
+    }
+  }
+}
+
+void Node::SetCost(const unsigned dest, const double c)
+{
+  for(unsigned i = 0; i < costs.size(); ++i){
+    if(costs[i].dest_node == dest){
+      costs[i].cost = c;
+      return;
+    }
+  }
+  costs.push_back(Row(dest, dest, c));
 }
 #endif

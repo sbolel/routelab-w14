@@ -38,7 +38,13 @@ struct RoutingMessage {
   RoutingMessage();
   RoutingMessage(const Node &src, const Node &dest, const double cost);
   RoutingMessage(const RoutingMessage &rhs);
-  RoutingMessage &operator=(const RoutingMessage &rhs);
+  RoutingMessage &operator=(const RoutingMessage &rhs)
+  {
+    srcnode = rhs.srcnode;
+    dest = rhs.dest;
+    cost = rhs.cost;
+    return *this;
+  }
 
   ostream & Print(ostream &os) const;
 };

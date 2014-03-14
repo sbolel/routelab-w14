@@ -43,9 +43,16 @@ inline ostream & operator<<(ostream &os, const Row &r) { return r.Print(os);}
 class Table {
   deque<Row> m;
  public:
+  Table() : m()
+  {
+
+  }
+  Table(const Table& rhs) : m(rhs.m)
+  {
+  }
   deque<Row>::iterator FindMatching(const unsigned dest);
-  Row *GetNext(const unsigned dest);
-  void SetNext(const unsigned dest, const Row &r);
+  Row *GetNext(const unsigned dest); // why are we return a whole Row?
+  void SetNext(const unsigned dest, const Row &r);  // why are we accepting a whole Row?
   ostream & Print(ostream &os) const;
 };
 #endif

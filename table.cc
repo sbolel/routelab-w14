@@ -17,14 +17,26 @@ ostream & Table::Print(ostream &os) const
 
 deque<Row>::iterator Table::FindMatching(const unsigned dest) 
 {
+  for(deque<Row>::iterator i = m.begin(); i != m.end(); ++i){
+    if(i->dest_node == dest){
+      return i;
+    }
+  }
+  return m.end();
 }
 
 Row *Table::GetNext(const unsigned dest) 
 {
+  deque<Row>::iterator i = FindMatching(dest);
+  Row* nextHopRow = new Row(i->dest_node, i->next_node, i->cost);
+  return nextHopRow; ////////////PLACE HOLDER FOR UNTIL I FIGURE OUT WHY THE FUCK WE'RE RETURNING A ROW*//////////////////
+  ////////////WE'RE JUST RETURNING A COPY OF THE ROW WITH MATCHING DEST HERE//////////////////
 }
 
 void Table::SetNext(const unsigned dest, const Row &r)
 {
+  deque<Row>::iterator i = FindMatching(dest);
+  cout << "Table SetNext called with dest: " << dest << "and r: " << r << endl;
 }
 
 Row::Row(const unsigned dest, const unsigned next, const double c) :

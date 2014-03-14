@@ -179,13 +179,16 @@ void Node::LinkUpdate(const Link *l)
   // update our table
   // send out routing mesages
   cerr << *this<<": Link Update: "<<*l<<endl;
+  cerr << "Current cost: " << FindCost(l->GetDest()) << endl;
   SetCost(l->GetDest(), l->GetLatency());
+  cerr << "Current cost: " << FindCost(l->GetDest()) << endl;
   deque<Row>::iterator it = table.m.begin();
   deque<Node*>* neighbors = GetNeighbors();
   double min;
   unsigned min_node;
   double c;
   bool changed = false;
+
   for( ; it != table.m.end(); ++it){
     unsigned dst = it->dest_node;
     min = 0;
@@ -215,6 +218,7 @@ void Node::LinkUpdate(const Link *l)
         min_node = (*i)->GetNumber();
       }
     }
+    cerr << "Min: " << min << " Previous Cost: " << it->cost << endl;
     if(min != it->cost){
       //least-cost has changed
       cerr << "Least-cost has changed" << endl;
@@ -223,6 +227,14 @@ void Node::LinkUpdate(const Link *l)
       SendToNeighbors(new RoutingMessage(*this, Node(it->dest_node, 0, 0, 0), min));
     }
   }
+  it = table.m.begin();
+  for( ; it != table.m.end(); ++it){
+    if(it->dest_node == l->GetDest()){
+      return;
+    }
+  }
+  table.m.push_back(Row(l->GetDest(), l->GetDest(), l->GetLatency()));
+  SendToNeighbors(new RoutingMessage(*this, Node(l->GetDest(), 0, 0, 0), l->GetLatency()));
   /*
   deque<Node*> * neighbors = GetNeighbors();
   set<unsigned> updatedDists;

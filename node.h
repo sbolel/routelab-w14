@@ -5,6 +5,7 @@
 #include <iostream>
 #include <deque>
 #include <map>
+#include <set>
 
 
 class RoutingMessage;
@@ -31,6 +32,7 @@ class Node {
 #if defined(DISTANCEVECTOR)
   Table table;
   map<unsigned, vector<Row>> neighborTable;
+  //map<unsigned, Table> neighborTable;
   vector<Row> costs;
 #endif
   

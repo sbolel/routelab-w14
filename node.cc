@@ -181,6 +181,19 @@ void Node::LinkUpdate(const Link *l)
   cerr << *this<<": Link Update: "<<*l<<endl;
   SetCost(l->GetDest(), l->GetLatency());
   deque<Node*> * neighbors = GetNeighbors();
+  set<unsigned> updatedDists;
+
+  double min;
+  for(map<unsigned, vector<Row>>::iterator i = neighborTable.begin(); i != neighborTable.end(); ++i){
+    vector<Row> ntable = i->second;
+    for(unsigned count = 0; count < ntable.size(); ++count){
+      if(updatedDists.find(ntable[count].dest_node) == updateDists.end()){
+        //if we have not already looked at this destination
+        min = 0;
+        double this_cost = FindCost()
+      }
+    }
+  }
   neighborTable[]
 }
 

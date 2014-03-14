@@ -283,6 +283,7 @@ void Node::ProcessIncomingRoutingMessage(const RoutingMessage *m)
     //here, recalculate least-cost like in linkUpdate
     double c;
     double min = 0;
+    unsigned min_node;
     deque<Node*>* neighbors = GetNeighbors();
     for(deque<Node*>::iterator i = neighbors->begin(); i != neighbors->end(); ++i){
       double n_to_dst = 0;
@@ -293,7 +294,7 @@ void Node::ProcessIncomingRoutingMessage(const RoutingMessage *m)
           //the neighbor has an entry in the map
           for(unsigned count = 0; count < neighborTable[(*i)->GetNumber()].size(); ++count){
             //loop through the neighbor's table to find the entry for this dest
-            if(neighborTable[(*i)->GetNumber()][count].dest_node == dst){
+            if(neighborTable[(*i)->GetNumber()][count].dest_node == m->dest.GetNumber()){
               n_to_dst = neighborTable[(*i)->GetNumber()][count].cost;
             }
           }//out of loop, check to see if we found an entry
@@ -310,6 +311,13 @@ void Node::ProcessIncomingRoutingMessage(const RoutingMessage *m)
         min = c;
         min_node = (*i)->GetNumber();
       }
+    }
+    deque<Row>::iterator iter = table.FindMatching(m->dest.GetNumber());
+
+    if(min != iter->cost){
+      iter->cost = min;
+      iter->next_node = min_node;
+      SendToNeighbors(new RoutingMessage(*this, Node(iter->dest_node, 0, 0, 0), min));
     }
     
     //here, recalculate least-cost like in linkUpdate

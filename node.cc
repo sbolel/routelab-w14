@@ -210,6 +210,7 @@ void Node::LinkUpdate(const Link *l)
           }
         } else {
           cout << "For some reason, there's no entry in the neighborTable for this neighbor" << endl;
+          continue;
         }
       }
       c = n_to_dst + FindCost((*i)->GetNumber());
@@ -263,11 +264,13 @@ void Node::ProcessIncomingRoutingMessage(const RoutingMessage *m)
   cerr << "Node "<<GetNumber()<<": "<<m->srcnode.GetNumber()<<" has new cost "<<m->cost
        <<" path to "<<m->dest.GetNumber()<<" Action: ";
 
+  
+/*
   if (m->dest.GetNumber()==GetNumber()) { 
     cerr << " ourself - ignored\n";
     return;
   }
-
+*/
 }
 
 void Node::TimeOut()
